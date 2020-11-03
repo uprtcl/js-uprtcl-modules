@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "common-ui",
+    "documents",
+    "evees",
+    "modules/wikis",
+    "demos/simple-editor"
+  ],
+  "version": "0.0.1-beta.01"
+}
