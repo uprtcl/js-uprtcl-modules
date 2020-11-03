@@ -73,7 +73,7 @@
       "url": "https://github.com/pepoospina"
     }
   ],
-  "license": "MIT",
+  "license": "BOOS-FL",
   "main": "dist/uprtcl-documents.umd.js",
   "module": "dist/uprtcl-documents.es5.js",
   "typings": "dist/types/uprtcl-documents.d.ts",
