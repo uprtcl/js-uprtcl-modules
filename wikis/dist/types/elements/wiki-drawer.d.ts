@@ -1,0 +1,41 @@
+import { LitElement } from 'lit-element';
+import { ApolloClient } from 'apollo-boost';
+import { Logger } from '@uprtcl/micro-orchestrator';
+import { PatternRecognizer } from '@uprtcl/cortex';
+import { EveesRemote } from '@uprtcl/evees';
+import { WikiDrawerContent } from './wiki-drawer-content';
+import { ProposalCreatedEvent } from '@uprtcl/evees/dist/types/types';
+declare const WikiDrawer_base: {
+    new (...args: any[]): import("@uprtcl/micro-orchestrator").ConnectedElement;
+    prototype: any;
+} & typeof LitElement;
+export declare class WikiDrawer extends WikiDrawer_base {
+    logger: Logger;
+    firstRef: string;
+    showProposals: boolean;
+    showBack: boolean;
+    uref: string;
+    officialOwner: string;
+    checkOwner: boolean;
+    loading: boolean;
+    creatorId: string;
+    content: WikiDrawerContent;
+    eveesInfoLocal: any;
+    protected client: ApolloClient<any>;
+    protected eveesRemotes: EveesRemote[];
+    protected recognizer: PatternRecognizer;
+    constructor();
+    firstUpdated(): Promise<void>;
+    connectedCallback(): void;
+    load(): Promise<void>;
+    forceReload(): Promise<void>;
+    updated(changedProperties: any): void;
+    catchMergeProposal(e: ProposalCreatedEvent): Promise<void>;
+    color(): string;
+    loggedIn(): void;
+    renderBreadcrumb(): import("lit-element").TemplateResult;
+    renderLoginWidget(): import("lit-element").TemplateResult;
+    render(): import("lit-element").TemplateResult;
+    static get styles(): import("lit-element").CSSResult[];
+}
+export {};

@@ -1,0 +1,45 @@
+import { LitElement } from 'lit-element';
+import { Logger } from '@uprtcl/micro-orchestrator';
+import { Proposal } from '../types';
+import { EveesRemote } from 'src/services/evees.remote';
+import { UprtclDialog } from '@uprtcl/common-ui';
+import { EveesDiff } from './evees-diff';
+import { ApolloClient } from 'apollo-boost';
+import { PatternRecognizer } from '@uprtcl/cortex';
+import { ProposalsProvider } from 'src/services/proposals.provider';
+declare const EveesProposalRow_base: {
+    new (...args: any[]): import("@uprtcl/micro-orchestrator").ConnectedElement;
+    prototype: any;
+} & typeof LitElement;
+export declare class EveesProposalRow extends EveesProposalRow_base {
+    logger: Logger;
+    proposalId: string;
+    remoteId: string;
+    loading: boolean;
+    loadingCreator: boolean;
+    showDiff: Boolean;
+    authorId: string | undefined;
+    canRemove: Boolean;
+    updatesDialogEl: UprtclDialog;
+    eveesDiffEl: EveesDiff;
+    remote: EveesRemote;
+    proposals: ProposalsProvider;
+    proposal: Proposal;
+    executed: boolean;
+    canExecute: boolean;
+    protected client: ApolloClient<any>;
+    protected recognizer: PatternRecognizer;
+    protected eveesRemotes: EveesRemote[];
+    firstUpdated(): Promise<void>;
+    updated(changedProperties: any): void;
+    load(): Promise<void>;
+    checkIsOwner(): Promise<void>;
+    checkExecuted(): Promise<void>;
+    checkCanExecute(): Promise<void>;
+    showProposalChanges(): Promise<void>;
+    renderDiff(): import("lit-element").TemplateResult;
+    renderDefault(): import("lit-element").TemplateResult;
+    render(): any;
+    static get styles(): import("lit-element").CSSResult;
+}
+export {};
