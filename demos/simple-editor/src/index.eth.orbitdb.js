@@ -1,34 +1,34 @@
-import { ethers } from "ethers";
-import IPFS from "ipfs";
-import { env } from "../env";
+import { ethers } from 'ethers';
+import IPFS from 'ipfs';
+import { env } from '../env';
 
 import {
   MicroOrchestrator,
   i18nextBaseModule,
-} from "@uprtcl/micro-orchestrator";
-import { LensesModule } from "@uprtcl/lenses";
-import { DocumentsModule } from "@uprtcl/documents";
-import { WikisModule } from "@uprtcl/wikis";
+} from '@uprtcl/micro-orchestrator';
+import { LensesModule } from '@uprtcl/lenses';
+import { DocumentsModule } from '@uprtcl/documents';
+import { WikisModule } from '@uprtcl/wikis';
 
-import { CortexModule } from "@uprtcl/cortex";
-import { EveesModule } from "@uprtcl/evees";
-import { IpfsStore } from "@uprtcl/ipfs-provider";
+import { CortexModule } from '@uprtcl/cortex';
+import { EveesModule } from '@uprtcl/evees';
+import { IpfsStore } from '@uprtcl/ipfs-provider';
 
 import {
   EveesBlockchainCached,
   EveesBlockchainModule,
-} from "@uprtcl/evees-blockchain";
+} from '@uprtcl/evees-blockchain';
 import {
   EthereumOrbitDBIdentity,
   EveesEthereumConnection,
-} from "@uprtcl/evees-ethereum";
+} from '@uprtcl/evees-ethereum';
 
-import { EthereumConnection } from "@uprtcl/ethereum-provider";
+import { EthereumConnection } from '@uprtcl/ethereum-provider';
 
-import { ApolloClientModule } from "@uprtcl/graphql";
-import { DiscoveryModule } from "@uprtcl/multiplatform";
+import { ApolloClientModule } from '@uprtcl/graphql';
+import { DiscoveryModule } from '@uprtcl/multiplatform';
 
-import { OrbitDBCustom, AddressMapping } from "@uprtcl/orbitdb-provider";
+import { OrbitDBCustom, AddressMapping } from '@uprtcl/orbitdb-provider';
 import {
   EveesOrbitDB,
   EveesOrbitDBModule,
@@ -39,23 +39,23 @@ import {
   ProposalsToPerspectiveStore,
   getContextAcl,
   getProposalsAcl,
-} from "@uprtcl/evees-orbitdb";
+} from '@uprtcl/evees-orbitdb';
 
-import { EveesReader } from "@uprtcl/evees-reader";
+import { EveesReader } from '@uprtcl/evees-reader';
 
-import { SimpleWiki } from "./simple-wiki";
+import { SimpleWiki } from './simple-wiki';
 
 (async function () {
   // const provider = '';
   // const provider = ethers.getDefaultProvider('rinkeby', env.ethers.apiKeys);
   // const provider = 'https://rpc.xdaichain.com/';
-  const provider = "https://xdai.poanetwork.dev";
+  const provider = 'https://xdai.poanetwork.dev';
 
   const ipfsCidConfig = {
     version: 1,
-    type: "sha2-256",
-    codec: "raw",
-    base: "base58btc",
+    type: 'sha2-256',
+    codec: 'raw',
+    base: 'base58btc',
   };
 
   const ipfsJSConfig = {
@@ -75,7 +75,7 @@ import { SimpleWiki } from "./simple-wiki";
 
   const ipfs = await IPFS.create(ipfsJSConfig);
 
-  console.log("connecting to pinner peer");
+  console.log('connecting to pinner peer');
   await ipfs.swarm.connect(env.pinner.peerMultiaddr);
   console.log(`connected to ${env.pinner.peerMultiaddr}`);
 
@@ -129,7 +129,7 @@ import { SimpleWiki } from "./simple-wiki";
 
   const reader = new EveesReader([orbitdbEvees, ethEvees], ipfsStore);
 
-  const uref = "zb2rhdUKzsNN3ymGovvXPBSNkBALwsWs4wcbxijTJxrZ7j5nK";
+  const uref = 'zb2rhdUKzsNN3ymGovvXPBSNkBALwsWs4wcbxijTJxrZ7j5nK';
   if (uref) {
     const read = await reader.resolve(uref);
     console.log(`Read ${uref}`, read);
@@ -152,9 +152,9 @@ import { SimpleWiki } from "./simple-wiki";
 
   /*** add other services to the container */
   orchestrator.container
-    .bind("official-connection")
+    .bind('official-connection')
     .toConstantValue(ethConnection);
 
   console.log(orchestrator);
-  customElements.define("simple-wiki", SimpleWiki);
+  customElements.define('simple-wiki', SimpleWiki);
 })();
