@@ -1,4 +1,9 @@
 {
-  "packages": ["common-ui", "documents", "evees", "wikis"],
-  "version": "0.1.0-beta.1"
+  "packages": [
+    "common-ui",
+    "documents",
+    "evees",
+    "wikis"
+  ],
+  "version": "0.1.0-beta.2"
 }
