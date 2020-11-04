@@ -3,6 +3,7 @@
     "common-ui",
     "documents",
     "evees",
+    "evees-reader",
     "wikis",
     "demos/simple-editor"
   ],

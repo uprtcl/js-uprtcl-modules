@@ -1,6 +1,6 @@
 {
   "name": "@uprtcl/evees-reader",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "Light way wervice to resoluve an Uprtcl reference into its latest data",
   "homepage": "https://uprtcl.io",
   "scripts": {
@@ -40,9 +40,9 @@
     "_Prtcl"
   ],
   "license": "MIT",
-  "main": "dist/uprtcl-evees.umd.js",
-  "module": "dist/uprtcl-evees.es5.js",
-  "typings": "dist/types/uprtcl-evees.d.ts",
+  "main": "dist/uprtcl-evees-reader.umd.js",
+  "module": "dist/uprtcl-evees-reader.es5.js",
+  "typings": "dist/types/uprtcl-evees-reader.d.ts",
   "sideEffects": false,
   "engines": {
     "node": ">=10.0.0 <14"

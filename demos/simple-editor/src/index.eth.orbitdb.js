@@ -41,6 +41,8 @@ import {
   getProposalsAcl,
 } from "@uprtcl/evees-orbitdb";
 
+import { EveesReader } from "@uprtcl/evees-reader";
+
 import { SimpleWiki } from "./simple-wiki";
 
 (async function () {
@@ -127,9 +129,11 @@ import { SimpleWiki } from "./simple-wiki";
 
   const reader = new EveesReader([orbitdbEvees, ethEvees], ipfsStore);
 
-  const uref = "";
-  const read = await reader.resolve(uref);
-  console.log(`Read ${uref}`, read);
+  const uref = "zb2rhdUKzsNN3ymGovvXPBSNkBALwsWs4wcbxijTJxrZ7j5nK";
+  if (uref) {
+    const read = await reader.resolve(uref);
+    console.log(`Read ${uref}`, read);
+  }
 
   const modules = [
     new i18nextBaseModule(),
