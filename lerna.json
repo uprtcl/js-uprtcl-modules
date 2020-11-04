@@ -3,7 +3,8 @@
     "common-ui",
     "documents",
     "evees",
-    "wikis"
+    "wikis",
+    "demos/simple-editor"
   ],
   "version": "0.1.0-beta.2"
 }

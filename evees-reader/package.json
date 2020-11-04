@@ -1,0 +1,54 @@
+{
+  "name": "@uprtcl/evees-reader",
+  "version": "0.1.0-beta.1",
+  "description": "Light way wervice to resoluve an Uprtcl reference into its latest data",
+  "homepage": "https://uprtcl.io",
+  "scripts": {
+    "clean": "rimraf dist",
+    "dev": "rollup -w -c rollup.config.ts",
+    "build": "npm run clean && rollup -c rollup.config.ts",
+    "test": "karma start --coverage",
+    "test:watch": "karma start --auto-watch=true --single-run=false"
+  },
+  "dependencies": {
+    "@uprtcl/evees": "^0.1.0-beta.1",
+    "@uprtcl/multiplatform": "^0.1.0-beta.1"
+  },
+  "devDependencies": {
+    "@open-wc/testing": "^2.5.6",
+    "@types/node": "^10.11.0",
+    "karma": "^4.4.1",
+    "rimraf": "^2.6.2",
+    "rollup": "^2.0.5",
+    "rollup-plugin-sourcemaps": "^0.5.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "temp-dir": "^2.0.0",
+    "typescript": "^3.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uprtcl/js-uprtcl-modules/"
+  },
+  "contributors": [
+    {
+      "name": "Pepo Ospina",
+      "email": "pepo@collectiveone.org",
+      "url": "https://github.com/pepoospina"
+    }
+  ],
+  "keywords": [
+    "_Prtcl"
+  ],
+  "license": "MIT",
+  "main": "dist/uprtcl-evees.umd.js",
+  "module": "dist/uprtcl-evees.es5.js",
+  "typings": "dist/types/uprtcl-evees.d.ts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=10.0.0 <14"
+  },
+  "files": [
+    "dist"
+  ],
+  "gitHead": "4a694f4b932472046283ecedcd65de631ab08813"
+}

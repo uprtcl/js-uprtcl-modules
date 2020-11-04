@@ -65,7 +65,7 @@
   "typings": "dist/types/uprtcl-wikis.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uprtcl/js-uprtcl/"
+    "url": "https://github.com/uprtcl/js-uprtcl-modules/"
   },
   "sideEffects": false,
   "engines": {

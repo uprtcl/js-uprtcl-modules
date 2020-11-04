@@ -79,7 +79,7 @@
   "typings": "dist/types/uprtcl-documents.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uprtcl/js-uprtcl/"
+    "url": "https://github.com/uprtcl/js-uprtcl-modules/"
   },
   "sideEffects": false,
   "engines": {

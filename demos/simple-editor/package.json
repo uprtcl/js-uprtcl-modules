@@ -17,7 +17,7 @@
   "license": "BOOS-FL",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uprtcl/js-uprtcl/"
+    "url": "https://github.com/uprtcl/js-uprtcl-modules/"
   },
   "scripts": {
     "start": "webpack-dev-server --mode development",
