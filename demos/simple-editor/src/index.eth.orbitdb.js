@@ -46,11 +46,6 @@ import { EveesReader } from '@uprtcl/evees-reader';
 import { SimpleWiki } from './simple-wiki';
 
 (async function () {
-  // const provider = '';
-  // const provider = ethers.getDefaultProvider('rinkeby', env.ethers.apiKeys);
-  // const provider = 'https://rpc.xdaichain.com/';
-  const provider = 'https://xdai.poanetwork.dev';
-
   const ipfsCidConfig = {
     version: 1,
     type: 'sha2-256',
@@ -82,7 +77,9 @@ import { SimpleWiki } from './simple-wiki';
   const ipfsStore = new IpfsStore(ipfsCidConfig, ipfs, env.pinner.url);
   await ipfsStore.ready();
 
-  const ethConnection = new EthereumConnection({ provider });
+  const ethConnection = new EthereumConnection({
+    provider: env.ethers.provider,
+  });
   await ethConnection.ready();
   const identity = new EthereumOrbitDBIdentity(ethConnection);
 
@@ -129,7 +126,7 @@ import { SimpleWiki } from './simple-wiki';
 
   const reader = new EveesReader([orbitdbEvees, ethEvees], ipfsStore);
 
-  const uref = 'zb2rhdUKzsNN3ymGovvXPBSNkBALwsWs4wcbxijTJxrZ7j5nK';
+  const uref = '';
   if (uref) {
     const read = await reader.resolve(uref);
     console.log(`Read ${uref}`, read);

@@ -26,20 +26,6 @@ import { TextNodeDiff } from './elements/document-text-node-diff';
  *
  * Example usage:
  *
- * ```ts
- * import { IpfsStore } from '@uprtcl/ipfs-provider';
- * import { DocumentsModule } from '@uprtcl/documents';
- *
- * const ipfsStore = new IpfsStore({
- *   host: 'ipfs.infura.io',
- *   port: 5001,
- *   protocol: 'https'
- * });
- *
- * const docs = new DocumentsModule([ ipfsStore ]);
- * await orchestrator.loadModule(docs);
- * ```
- *
  * @param stores an array of CASStores in which the documents objects can be stored/retrieved from
  */
 export class DocumentsModule extends EveesContentModule {
