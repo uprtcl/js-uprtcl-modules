@@ -66,7 +66,7 @@ export class UprtclButton extends LitElement {
           border-radius: 4px;
           display: flex;
           flex-direction: row;
-          justify-content: var(--justify-content, 'center');
+          justify-content: var(--justify-content, center);
           line-height: 36px;
           height: 36px;
           padding: 0px 16px;

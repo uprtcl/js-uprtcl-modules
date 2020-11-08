@@ -204,10 +204,6 @@ export class EveesInfoUserBased extends EveesInfoBase {
       this.eveesProposalsList.load();
     if (this.perspectivesList) this.perspectivesList.load();
 
-    this.showInfo = false;
-    await this.updateComplete;
-    this.showInfo = true;
-
     this.loading = false;
   }
 
@@ -591,8 +587,6 @@ export class EveesInfoUserBased extends EveesInfoBase {
         }
         .tab-other {
           width: 340px;
-        }
-        .tab-other uprtcl-button {
           --justify-content: start;
         }
         .left-buttons {

@@ -185,8 +185,6 @@ export class WikiDrawer extends moduleConnect(LitElement) {
         official-owner=${this.officialOwner}
         ?check-owner=${this.checkOwner}
         ?show-proposals=${this.showProposals}
-        show-info
-        show-icon
         ?show-debug=${false}
         show-draft
         show-edit-draft
