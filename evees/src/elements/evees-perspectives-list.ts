@@ -75,7 +75,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
             }
           }
         }
-      }`
+      }`,
     });
 
     /** data on other perspectives (proposals are injected on them) */
@@ -86,15 +86,23 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
             result.data.entity.payload.context.perspectives.map(
               async (perspective): Promise<PerspectiveData> => {
                 /** data on this perspective */
-                const remote = this.remotes.find(r => r.id === perspective.payload.remote);
-                if (!remote) throw new Error(`remote not found for ${perspective.payload.remote}`);
-                this.canWrite = await EveesHelpers.canWrite(this.client, this.perspectiveId);
+                const remote = this.remotes.find(
+                  (r) => r.id === perspective.payload.remote
+                );
+                if (!remote)
+                  throw new Error(
+                    `remote not found for ${perspective.payload.remote}`
+                  );
+                this.canWrite = await EveesHelpers.canWrite(
+                  this.client,
+                  this.perspectiveId
+                );
                 return {
                   id: perspective.id,
                   name: perspective.name,
                   creatorId: perspective.payload.creatorId,
                   timestamp: perspective.payload.timestamp,
-                  remote: perspective.payload.remote
+                  remote: perspective.payload.remote,
                 };
               }
             )
@@ -102,17 +110,19 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
 
     // remove duplicates
     const map = new Map<string, PerspectiveData>();
-    perspectivesData.forEach(perspectiveData => map.set(perspectiveData.id, perspectiveData));
-    this.perspectivesData = Array.from(map, key => key[1]);
+    perspectivesData.forEach((perspectiveData) =>
+      map.set(perspectiveData.id, perspectiveData)
+    );
+    this.perspectivesData = Array.from(map, (key) => key[1]);
 
     this.otherPerspectivesData = this.perspectivesData.filter(
-      perspectiveData => !this.hidePerspectives.includes(perspectiveData.id)
+      (perspectiveData) => !this.hidePerspectives.includes(perspectiveData.id)
     );
 
     this.loadingPerspectives = false;
 
     this.logger.info('getOtherPersepectives() - post', {
-      persperspectivesData: this.perspectivesData
+      persperspectivesData: this.perspectivesData,
     });
   }
 
@@ -122,8 +132,8 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
         bubbles: true,
         composed: true,
         detail: {
-          id
-        }
+          id,
+        },
       })
     );
   }
@@ -139,8 +149,8 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
         bubbles: true,
         composed: true,
         detail: {
-          perspectiveId: perspectiveData.id
-        }
+          perspectiveId: perspectiveData.id,
+        },
       })
     );
   }
@@ -156,7 +166,9 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
   renderPerspectiveRow(perspectiveData: PerspectiveData) {
     return html`
       <uprtcl-list-item
-        style=${`--selected-border-color: ${this.perspectiveColor(perspectiveData.creatorId)}`}
+        style=${`--selected-border-color: ${this.perspectiveColor(
+          perspectiveData.creatorId
+        )}`}
         hasMeta
         ?selected=${this.perspectiveId === perspectiveData.id}
         @click=${() => this.perspectiveClicked(perspectiveData.id)}
@@ -165,6 +177,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
           show-name
           color=${this.perspectiveColor(perspectiveData.creatorId)}
           user-id=${perspectiveData.creatorId}
+          remote-id=${perspectiveData.remote}
         ></evees-author>
       </uprtcl-list-item>
     `;
@@ -176,7 +189,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
       : this.otherPerspectivesData.length > 0
       ? html`
           <uprtcl-list activatable>
-            ${this.otherPerspectivesData.map(perspectiveData =>
+            ${this.otherPerspectivesData.map((perspectiveData) =>
               this.renderPerspectiveRow(perspectiveData)
             )}
           </uprtcl-list>
@@ -204,6 +217,9 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
       }
       uprtcl-list-item {
         user-select: none;
+      }
+      uprtcl-list-item evees-author {
+        width: 100%;
       }
     `;
   }

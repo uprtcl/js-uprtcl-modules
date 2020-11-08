@@ -14,7 +14,6 @@ export interface EveesRemote extends EveesProvider, Remote {
   canWrite(uref: string): Promise<boolean>;
   lense?(): Lens;
   icon?(): TemplateResult;
-  /** a method to derive the id of the default perspective of a user,
-   * if user is empty, it returns the default perspective of the remote */
+  avatar?(userId: string, config: any): TemplateResult;
   getHome?(userId?: string): Promise<Secured<Perspective>>;
 }
