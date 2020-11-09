@@ -31,7 +31,7 @@ export class EveesAuthor extends moduleConnect(LitElement) {
   }
 
   updated(changedProperties) {
-    if (changedProperties.has('userId')) {
+    if (changedProperties.has('userId') || changedProperties.has('remoteId')) {
       this.load();
     }
   }
@@ -43,6 +43,7 @@ export class EveesAuthor extends moduleConnect(LitElement) {
     }
     this.remote = remote;
     this.loading = false;
+    this.requestUpdate();
   }
 
   render() {
@@ -68,6 +69,9 @@ export class EveesAuthor extends moduleConnect(LitElement) {
       }
       .avatar {
         flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
     `;
   }
