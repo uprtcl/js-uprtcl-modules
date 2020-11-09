@@ -376,7 +376,6 @@ export class EveesInfoUserBased extends EveesInfoBase {
             >
             </uprtcl-icon-button>
             <uprtcl-icon-button
-              skinny
               button
               class=${this.hasPull
                 ? 'margin-left-small highlighted'
