@@ -1,6 +1,6 @@
 {
   "name": "@uprtcl/evees",
-  "version": "0.1.0-beta.5",
+  "version": "0.1.0-beta.6",
   "description": "Cortex module that provides generic version control for any content-addressable content to become an Evolving Entity (Evee)",
   "homepage": "https://uprtcl.io",
   "scripts": {
@@ -11,7 +11,7 @@
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
   "dependencies": {
-    "@uprtcl/common-ui": "^0.1.0-beta.5",
+    "@uprtcl/common-ui": "^0.1.0-beta.6",
     "@uprtcl/cortex": "^0.1.0-beta.4",
     "@uprtcl/graphql": "^0.1.0-beta.4",
     "@uprtcl/ipfs-provider": "^0.1.0-beta.4",
