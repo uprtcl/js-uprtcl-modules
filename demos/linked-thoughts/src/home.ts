@@ -44,12 +44,20 @@ export class Home extends moduleConnect(LitElement) {
   async newDocument(title: string) {
     this.creatingNewDocument = true;
 
+    const client:ApolloClient<any> = this.request(ApolloClientModule.bindings.Client);
+
     const remote = this.requestAll(EveesModule.bindings.EveesRemote).find((provider: EveesRemote) =>
       provider.id.startsWith('http')
     ) as EveesRemote;
 
     const perspective = await remote.getHome(remote.userId);
-    const id = await remote.store.create(perspective.object);
+    
+    const id = await EveesHelpers.createPerspective(client, remote, {
+      context: perspective.object.payload.context,
+      timestamp: perspective.object.payload.timestamp,
+      creatorId: perspective.object.payload.creatorId
+    });
+
 
     if (id !== perspective.id) {
       throw new Error('unexpected id');

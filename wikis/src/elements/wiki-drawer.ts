@@ -40,6 +40,9 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   @property({ type: Boolean, attribute: 'show-back' })
   showBack: boolean = false;
 
+  @property({ type: Boolean, attribute: 'show-acl' })
+  showAcl: boolean = false;
+
   @property({ attribute: false })
   uref!: string;
 
@@ -184,7 +187,10 @@ export class WikiDrawer extends moduleConnect(LitElement) {
         first-uref=${this.firstRef}
         official-owner=${this.officialOwner}
         ?check-owner=${this.checkOwner}
+        ?show-acl=${this.showAcl}
         ?show-proposals=${this.showProposals}
+        show-info
+        show-icon
         ?show-debug=${false}
         show-draft
         show-edit-draft
