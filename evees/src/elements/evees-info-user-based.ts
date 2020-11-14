@@ -404,7 +404,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
                 ?loading=${this.creatingMine}
                 transition
               >
-                mine
+                ${this.mineId ? 'mine' : 'fork'}
               </uprtcl-button-loading>
               ${this.isMine && this.showEditDraft
                 ? html`
