@@ -51,13 +51,13 @@ export class Home extends moduleConnect(LitElement) {
     ) as EveesRemote;
 
     this.perspective = await this.remote.getHome(this.remote.userId);
-    const existentHome = await this.remote.getContextPerspectives(`${this.remote.userId}.home`);        
 
-    if(existentHome.length === 1) {
-      this.go(this.perspective.id);
-    } else {
+    try {            
+      await EveesHelpers.getPerspectiveHeadId(this.client, this.perspective.id);                        
+      this.go(this.perspective.id);      
+    } catch(e) {            
       this.loadingHome = false;
-    }    
+    }      
   }
 
   async newDocument(title: string) {
