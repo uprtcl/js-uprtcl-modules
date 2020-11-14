@@ -163,34 +163,22 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
     `;
   }
 
-  renderPerspectiveRow(perspectiveData: PerspectiveData) {
-    return html`
-      <uprtcl-list-item
-        style=${`--selected-border-color: ${this.perspectiveColor(
-          perspectiveData.creatorId
-        )}`}
-        hasMeta
-        ?selected=${this.perspectiveId === perspectiveData.id}
-        @click=${() => this.perspectiveClicked(perspectiveData.id)}
-      >
-        <evees-author
-          show-name
-          color=${this.perspectiveColor(perspectiveData.creatorId)}
-          user-id=${perspectiveData.creatorId}
-          remote-id=${perspectiveData.remote}
-        ></evees-author>
-      </uprtcl-list-item>
-    `;
-  }
-
-  render() {
+  render() {    
     return this.loadingPerspectives
       ? this.renderLoading()
       : this.otherPerspectivesData.length > 0
       ? html`
           <uprtcl-list activatable>
-            ${this.otherPerspectivesData.map((perspectiveData) =>
-              this.renderPerspectiveRow(perspectiveData)
+            ${this.otherPerspectivesData.map((perspectiveData) =>              
+              html`
+                <evees-perspective-row
+                  perspective-id=${this.perspectiveId}
+                  hasMeta
+                  perspective-data-id=${perspectiveData.id}
+                  creator-id=${perspectiveData.creatorId}
+                  remote-id=${perspectiveData.remote}
+                ></evees-perspective-row>
+              `
             )}
           </uprtcl-list>
         `
