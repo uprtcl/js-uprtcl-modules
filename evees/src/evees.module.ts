@@ -29,6 +29,7 @@ import { EveesAuthor } from './elements/evees-author';
 import { ProposalsList } from './elements/evees-proposals-list';
 import { EveesProposalDiff } from './elements/evees-proposal-diff';
 import { EveesLoginWidget } from './elements/evees-login';
+import { EveesPerspectiveRow } from './elements/evees-perspective-row';
 import { EveesProposalRow } from './elements/evees-proposal-row';
 import { EveesInfoUserBased } from './elements/evees-info-user-based';
 import { EveesPerspectiveIcon } from './uprtcl-evees';
@@ -97,6 +98,7 @@ export class EveesModule extends MicroModule {
     customElements.define('evees-proposal-diff', EveesProposalDiff);
     customElements.define('evees-author', EveesAuthor);
     customElements.define('evees-login-widget', EveesLoginWidget);
+    customElements.define('evees-perspective-row', EveesPerspectiveRow);
     customElements.define('evees-proposal-row', EveesProposalRow);
     customElements.define('evees-perspective-icon', EveesPerspectiveIcon);
   }
