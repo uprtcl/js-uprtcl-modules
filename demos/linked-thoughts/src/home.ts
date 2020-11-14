@@ -3,7 +3,6 @@ import { ApolloClient } from 'apollo-boost';
 
 import { moduleConnect } from '@uprtcl/micro-orchestrator';
 import { EveesModule, EveesRemote, EveesHelpers } from '@uprtcl/evees';
-
 import { EveesHttp } from '@uprtcl/evees-http';
 import { ApolloClientModule } from '@uprtcl/graphql';
 
@@ -32,6 +31,9 @@ export class Home extends moduleConnect(LitElement) {
   showNewSpaceForm: boolean = false;
 
   spaces!: object;
+  client: ApolloClient<any>;
+  remote: EveesRemote;
+  perspective: any;
 
   async firstUpdated() {
     const eveesProvider = this.requestAll(
@@ -39,31 +41,40 @@ export class Home extends moduleConnect(LitElement) {
     ).find((provider: EveesHttp) => provider.id.startsWith('http')) as EveesHttp;
 
     await eveesProvider.login();
+
+    this.loadingHome = true;
+
+    this.client = this.request(ApolloClientModule.bindings.Client);
+
+    this.remote = this.requestAll(EveesModule.bindings.EveesRemote).find((provider: EveesRemote) =>
+      provider.id.startsWith('http')
+    ) as EveesRemote;
+
+    this.perspective = await this.remote.getHome(this.remote.userId);
+    const existentHome = await this.remote.getContextPerspectives(`${this.remote.userId}.home`);        
+
+    if(existentHome.length === 1) {
+      this.go(this.perspective.id);
+    } else {
+      this.loadingHome = false;
+    }    
   }
 
   async newDocument(title: string) {
     this.creatingNewDocument = true;
-
-    const client:ApolloClient<any> = this.request(ApolloClientModule.bindings.Client);
-
-    const remote = this.requestAll(EveesModule.bindings.EveesRemote).find((provider: EveesRemote) =>
-      provider.id.startsWith('http')
-    ) as EveesRemote;
-
-    const perspective = await remote.getHome(remote.userId);
     
-    const id = await EveesHelpers.createPerspective(client, remote, {
-      context: perspective.object.payload.context,
-      timestamp: perspective.object.payload.timestamp,
-      creatorId: perspective.object.payload.creatorId
+    const id = await EveesHelpers.createPerspective(this.client, this.remote, {
+      context: this.perspective.object.payload.context,
+      timestamp: this.perspective.object.payload.timestamp,
+      creatorId: this.perspective.object.payload.creatorId
     });
 
 
-    if (id !== perspective.id) {
+    if (id !== this.perspective.id) {
       throw new Error('unexpected id');
     }
 
-    this.go(perspective.id);
+    this.go(this.perspective.id);    
   }
 
   go(perspectiveId: string) {
@@ -78,7 +89,7 @@ export class Home extends moduleConnect(LitElement) {
     }
 
     return html`
-      ${!this.showNewSpaceForm
+      ${!this.showNewSpaceForm && !this.loadingHome
         ? html`
             <img class="background-image" src="/img/home-bg.svg" />
             <div class="button-container">
@@ -87,7 +98,8 @@ export class Home extends moduleConnect(LitElement) {
               </uprtcl-button>
             </div>
           `
-        : html`
+        : !this.loadingHome
+          ? html`
             <uprtcl-form-string
               value=""
               label="title (optional)"
@@ -95,7 +107,11 @@ export class Home extends moduleConnect(LitElement) {
               @cancel=${() => (this.showNewSpaceForm = false)}
               @accept=${e => this.newDocument(e.detail.value)}
             ></uprtcl-form-string>
-          `}
+          `
+          : html`
+            <uprtcl-loading></uprtcl-loading>
+          `
+        }
     `;
   }
 
