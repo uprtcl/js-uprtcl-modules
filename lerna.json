@@ -4,7 +4,8 @@
     "documents",
     "evees",
     "evees-reader",
-    "wikis"
+    "wikis",
+    "demos/linked-thoughts"
   ],
   "version": "0.1.0-beta.8"
 }
