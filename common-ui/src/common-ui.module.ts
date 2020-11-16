@@ -20,6 +20,7 @@ import { UprtclSelect } from './elements/select';
 import { UprtclToggle } from './elements/toggle';
 import { UprtclIndicator } from './elements/indicator';
 import { UprtclCopyToClipboard } from './elements/copy-to-clipboard';
+import { UprtclIconAndName } from './elements/icon-and-name';
 
 export class CommonUIModule extends MicroModule {
   static id = 'common-ui-module';
@@ -46,6 +47,7 @@ export class CommonUIModule extends MicroModule {
     customElements.define('uprtcl-toggle', UprtclToggle);
     customElements.define('uprtcl-indicator', UprtclIndicator);
     customElements.define('uprtcl-copy-to-clipboard', UprtclCopyToClipboard);
+    customElements.define('uprtcl-icon-and-name', UprtclIconAndName);
   }
 
   get submodules() {

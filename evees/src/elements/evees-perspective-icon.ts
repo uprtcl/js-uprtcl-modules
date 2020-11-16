@@ -87,7 +87,7 @@ export class EveesPerspectiveIcon extends moduleConnect(LitElement) {
         <b class="tag-text">on</b>
         <div class="remote-icon">
           ${this.remote.icon
-            ? html` ${this.remote.icon()} `
+            ? html` ${this.remote.icon(this.perspective.object.payload.path)} `
             : html`
                 remote
                 <pre>${this.perspective.object.payload.remote}</pre>

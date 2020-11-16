@@ -13,7 +13,7 @@ export interface EveesRemote extends EveesProvider, Remote {
 
   canWrite(uref: string): Promise<boolean>;
   lense?(): Lens;
-  icon?(): TemplateResult;
+  icon?(path?: string): TemplateResult;
   avatar?(userId: string, config: any): TemplateResult;
   getHome?(userId?: string): Promise<Secured<Perspective>>;
 }
