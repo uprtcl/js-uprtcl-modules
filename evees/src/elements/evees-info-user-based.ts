@@ -47,6 +47,9 @@ export class EveesInfoUserBased extends EveesInfoBase {
   checkOwner: boolean = false;
 
   @property({ attribute: false })
+  loading: boolean = true;
+
+  @property({ attribute: false })
   officialId: string | undefined = undefined;
 
   @property({ attribute: false })
@@ -391,7 +394,8 @@ export class EveesInfoUserBased extends EveesInfoBase {
             </uprtcl-icon-button>
           `
         : ''}
-      ${this.isLoggedOnDefault
+      ${(this.isLoggedOnDefault && this.loading) ||
+      (this.officialId !== undefined && this.officialId !== this.mineId)
         ? html`
             <div class="mine-and-settings">
               <uprtcl-button-loading
@@ -404,7 +408,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
                 ?loading=${this.creatingMine}
                 transition
               >
-                ${this.mineId ? 'mine' : 'fork'}
+                ${this.loading ? '' : this.mineId ? 'mine' : 'fork'}
               </uprtcl-button-loading>
               ${this.isMine && this.showEditDraft
                 ? html`
@@ -451,7 +455,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
                   color=${eveeColor(this.uref)}
                 ></evees-author>
               `
-            : html` other `}
+            : html`other`}
         </uprtcl-button>
         ${this.renderOtherPerspectives()}
       </uprtcl-popper>

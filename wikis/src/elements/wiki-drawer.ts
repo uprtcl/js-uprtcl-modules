@@ -238,6 +238,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
           color=${this.color()}
           official-owner=${this.officialOwner}
           ?check-owner=${this.checkOwner}
+          ?show-acl=${this.showAcl}
         >
         </wiki-drawer-content>
       </div>

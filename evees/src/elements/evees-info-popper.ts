@@ -8,9 +8,12 @@ import { ApolloClientModule } from '@uprtcl/graphql';
 import { Signed } from '@uprtcl/cortex';
 import { Perspective } from '../types';
 
-const styleMap = style => {
+const styleMap = (style) => {
   return Object.entries(style).reduce((styleString, [propName, propValue]) => {
-    propName = propName.replace(/([A-Z])/g, matches => `-${matches[0].toLowerCase()}`);
+    propName = propName.replace(
+      /([A-Z])/g,
+      (matches) => `-${matches[0].toLowerCase()}`
+    );
     return `${styleString}${propName}:${propValue};`;
   }, '');
 };
@@ -77,7 +80,10 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
   }
 
   async load() {
-    const current = await loadEntity<Signed<Perspective>>(this.client, this.uref);
+    const current = await loadEntity<Signed<Perspective>>(
+      this.client,
+      this.uref
+    );
     if (!current) throw new Error(`cant find current perspective ${this.uref}`);
 
     this.creatorId = current.object.payload.creatorId;
@@ -121,9 +127,14 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
       <uprtcl-popper
         id="info-popper"
         position="right"
-        @drop-down-changed=${e => (this.dropdownShown = e.detail.shown)}
+        @drop-down-changed=${(e) => (this.dropdownShown = e.detail.shown)}
       >
-        <div draggable="false" @dragstart=${this.handleDragStart} slot="icon" class="evee-stripe">
+        <div
+          draggable="false"
+          @dragstart=${this.handleDragStart}
+          slot="icon"
+          class="evee-stripe"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -144,13 +155,15 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
                   ?show-info=${this.showInfo}
                   ?show-icon=${this.showIcon}
                   ?show-debug=${this.showDebug}
+                  ?show-acl=${this.showAcl}
                   ?emit-proposals=${this.showInfo}
                   uref=${this.uref}
                   parent-id=${this.parentId}
                   first-uref=${this.firstRef as string}
                   official-owner=${this.officialOwner as string}
                   ?check-owner=${this.checkOwner}
-                  @official-id=${e => this.officialIdReceived(e.detail.perspectiveId)}
+                  @official-id=${(e) =>
+                    this.officialIdReceived(e.detail.perspectiveId)}
                 ></evees-info-user-based>
               </div>
             `
@@ -185,7 +198,7 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
         .evee-stripe:hover {
           background-color: #eef1f1;
         }
-      `
+      `,
     ];
   }
 }

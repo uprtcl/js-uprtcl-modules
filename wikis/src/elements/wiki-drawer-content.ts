@@ -60,6 +60,9 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
   @property({ type: Boolean, attribute: 'check-owner' })
   checkOwner: boolean = false;
 
+  @property({ type: Boolean, attribute: 'show-acl' })
+  showAcl: boolean = false;
+
   @property({ type: Boolean })
   editable: boolean = false;
 
@@ -580,6 +583,7 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
                     official-owner=${this.officialOwner}
                     ?check-owner=${this.checkOwner}
                     show-info
+                    ?show-acl=${this.showAcl}
                   >
                   </documents-editor>
                 </div>
