@@ -4,6 +4,7 @@
   "description": "Cortex module that provides generic version control for any content-addressable content to become an Evolving Entity (Evee)",
   "homepage": "https://uprtcl.io",
   "scripts": {
+    "upgrade-uprtcl": "npm i @uprtcl/common-ui@latest @uprtcl/cortex@latest @uprtcl/graphql@latest @uprtcl/ipfs-provider@latest @uprtcl/lenses@latest @uprtcl/micro-orchestrator@latest @uprtcl/multiplatform@latest",
     "clean": "rimraf dist",
     "dev": "rollup -w -c rollup.config.ts",
     "build": "npm run clean && rollup -c rollup.config.ts",

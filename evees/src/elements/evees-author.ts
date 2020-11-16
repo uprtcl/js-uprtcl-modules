@@ -66,9 +66,12 @@ export class EveesAuthor extends moduleConnect(LitElement) {
     return css`
       :host {
         display: flex;
+        flex: 1 1 0px;
+        overflow: hidden;
       }
       .avatar {
         flex: 1 1 auto;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         justify-content: center;

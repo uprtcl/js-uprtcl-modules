@@ -34,7 +34,7 @@ export class UprtclIconAndName extends LitElement {
         }
         .icon-container {
           height: 28px;
-          width: 28px;
+          flex: 0 0 28px;
           margin-right: 6px;
           border-radius: 14px;
           overflow: hidden;
@@ -47,8 +47,6 @@ export class UprtclIconAndName extends LitElement {
           color: #636668;
           font-weight: bold;
           white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
       `,
     ];

@@ -116,6 +116,10 @@ export class EveesLoginWidget extends moduleConnect(LitElement) {
       uprtcl-button {
         margin-right: 10px;
       }
+
+      evees-author {
+        width: 28px;
+      }
     `;
   }
 }

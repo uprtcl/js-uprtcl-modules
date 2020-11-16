@@ -35,6 +35,7 @@ import {
   Secured,
   hashObject,
   EveesConfig,
+  EveesInfoConfig,
 } from '@uprtcl/evees';
 import { MenuConfig } from '@uprtcl/common-ui';
 import { loadEntity } from '@uprtcl/multiplatform';
@@ -57,12 +58,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   @property({ attribute: false })
   uref!: string;
 
-  @property({ type: String, attribute: 'official-owner' })
-  officialOwner!: string;
-
-  @property({ type: Boolean, attribute: 'check-owner' })
-  checkOwner: boolean = false;
-
   @property({ type: Boolean, attribute: 'read-only' })
   readOnly: boolean = false;
 
@@ -75,11 +70,8 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   @property({ type: String, attribute: 'default-type' })
   defaultType: string = EveesModule.bindings.PerspectiveType;
 
-  @property({ type: Boolean, attribute: 'show-info' })
-  renderInfo: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-acl' })
-  showAcl: boolean = false;
+  @property({ type: Object })
+  eveesInfoConfig!: EveesInfoConfig;
 
   @property({ attribute: false })
   docHasChanges: boolean = false;
@@ -1260,7 +1252,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       >
         ${!this.readOnly
           ? html`<div class="evee-info" style=${`padding-top:${paddingTop}`}>
-              ${!node.isPlaceholder && this.renderInfo
+              ${!node.isPlaceholder && this.eveesInfoConfig.showInfo
                 ? html`
                     <evees-info-popper
                       parent-id=${node.parent
@@ -1268,17 +1260,10 @@ export class DocumentEditor extends moduleConnect(LitElement) {
                         : this.parentId}
                       uref=${uref}
                       first-uref=${firstRef}
-                      official-owner=${this.officialOwner}
-                      ?check-owner=${this.checkOwner}
                       evee-color=${this.getColor()}
                       @checkout-perspective=${(e) =>
                         this.handleNodePerspectiveCheckout(e, node)}
-                      show-draft
-                      show-info
-                      show-icon
-                      ?show-acl=${this.showAcl}
-                      ?show-debug=${false}
-                      emit-proposals
+                      .eveesInfoConfig=${this.eveesInfoConfig}
                     ></evees-info-popper>
                   `
                 : html` <div class="empty-evees-info"></div> `}
@@ -1328,12 +1313,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
           color=${this.getColor()}
           @checkout-perspective=${(e) =>
             this.handleEditorPerspectiveCheckout(e, node)}
-          official-owner=${this.officialOwner}
-          ?check-owner=${this.checkOwner}
-          show-draft
-          show-info
-          show-icon
-          ?show-debug=${false}
+          .eveesInfoConfig=${this.eveesInfoConfig}
         >
         </documents-editor>
       `;

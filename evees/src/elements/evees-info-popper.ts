@@ -1,22 +1,15 @@
 import { html, css, property, LitElement, query } from 'lit-element';
-import { DEFAULT_COLOR, eveeColor } from './support';
-import { UprtclPopper, icons } from '@uprtcl/common-ui';
+import { ApolloClient } from 'apollo-boost';
+
+import { UprtclPopper } from '@uprtcl/common-ui';
 import { Logger, moduleConnect } from '@uprtcl/micro-orchestrator';
 import { loadEntity } from '@uprtcl/multiplatform';
-import { ApolloClient } from 'apollo-boost';
 import { ApolloClientModule } from '@uprtcl/graphql';
 import { Signed } from '@uprtcl/cortex';
-import { Perspective } from '../types';
 
-const styleMap = (style) => {
-  return Object.entries(style).reduce((styleString, [propName, propValue]) => {
-    propName = propName.replace(
-      /([A-Z])/g,
-      (matches) => `-${matches[0].toLowerCase()}`
-    );
-    return `${styleString}${propName}:${propValue};`;
-  }, '');
-};
+import { DEFAULT_COLOR, eveeColor } from './support';
+import { Perspective } from '../types';
+import { EveesInfoConfig } from './evees-info-user-based';
 
 export class EveesInfoPopper extends moduleConnect(LitElement) {
   logger = new Logger('EVEES-INFO-POPPER');
@@ -39,26 +32,8 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
   @property({ type: String, attribute: 'evee-color' })
   eveeColor!: string;
 
-  @property({ type: Boolean, attribute: 'show-draft' })
-  showDraft: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-proposals' })
-  showProposals: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-acl' })
-  showAcl: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-info' })
-  showInfo: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-icon' })
-  showIcon: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-debug' })
-  showDebug: boolean = false;
-
-  @property({ type: Boolean, attribute: 'emit-proposals' })
-  emitProposals: boolean = false;
+  @property({ type: Object })
+  eveesInfoConfig!: EveesInfoConfig;
 
   @property({ attribute: false })
   officialId!: string;
@@ -130,7 +105,7 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
         @drop-down-changed=${(e) => (this.dropdownShown = e.detail.shown)}
       >
         <div
-          draggable="false"
+          draggable=${this.eveesInfoConfig.isDraggable ? 'true' : 'false'}
           @dragstart=${this.handleDragStart}
           slot="icon"
           class="evee-stripe"
@@ -150,18 +125,10 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
           ? html`
               <div class="evees-info">
                 <evees-info-user-based
-                  ?show-draft=${this.showDraft}
-                  ?show-proposals=${this.showProposals}
-                  ?show-info=${this.showInfo}
-                  ?show-icon=${this.showIcon}
-                  ?show-debug=${this.showDebug}
-                  ?show-acl=${this.showAcl}
-                  ?emit-proposals=${this.showInfo}
+                  .eveesInfoConfig=${this.eveesInfoConfig}
                   uref=${this.uref}
                   parent-id=${this.parentId}
                   first-uref=${this.firstRef as string}
-                  official-owner=${this.officialOwner as string}
-                  ?check-owner=${this.checkOwner}
                   @official-id=${(e) =>
                     this.officialIdReceived(e.detail.perspectiveId)}
                 ></evees-info-user-based>
