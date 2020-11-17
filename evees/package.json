@@ -1,6 +1,6 @@
 {
   "name": "@uprtcl/evees",
-  "version": "0.1.0-beta.8",
+  "version": "0.1.0-beta.9",
   "description": "Cortex module that provides generic version control for any content-addressable content to become an Evolving Entity (Evee)",
   "homepage": "https://uprtcl.io",
   "scripts": {
@@ -12,7 +12,7 @@
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
   "dependencies": {
-    "@uprtcl/common-ui": "0.1.0-beta.8",
+    "@uprtcl/common-ui": "^0.1.0-beta.9",
     "@uprtcl/cortex": "0.1.0-beta.4",
     "@uprtcl/graphql": "0.1.0-beta.4",
     "@uprtcl/ipfs-provider": "0.1.0-beta.6",
@@ -40,13 +40,13 @@
     "graphql": "^14.6.0",
     "graphql-tools": "^5.0.0",
     "karma": "^4.4.1",
+    "npm-check-updates": "^10.2.1",
     "rimraf": "^2.6.2",
     "rollup": "^2.0.5",
     "rollup-plugin-sourcemaps": "^0.5.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "temp-dir": "^2.0.0",
-    "typescript": "^3.8.3",
-    "npm-check-updates": "^10.2.1"
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
