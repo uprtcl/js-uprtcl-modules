@@ -383,8 +383,9 @@ export class EveesInfoUserBased extends EveesInfoBase {
             </uprtcl-icon-button>
           `
         : ''}
-      ${(this.isLoggedOnDefault && this.loading) ||
-      (this.officialId !== undefined && this.officialId !== this.mineId)
+      ${this.isLoggedOnDefault &&
+      (this.loading ||
+        (this.officialId !== undefined && this.officialId !== this.mineId))
         ? html`
             <div class="mine-and-settings">
               <uprtcl-button-loading
