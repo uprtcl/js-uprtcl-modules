@@ -13,38 +13,30 @@ import { DEFAULT_COLOR, eveeColor } from './support';
 import { Secured } from '../utils/cid-hash';
 import { ContentUpdatedEvent } from './events';
 
+export interface EveesInfoConfig {
+  showProposals?: boolean;
+  showDraftControl?: boolean;
+  showMyDraft?: boolean;
+  showInfo?: boolean;
+  showIcon?: boolean;
+  showAcl?: boolean;
+  showDebugInfo?: boolean;
+  officialOwner?: string;
+  checkOwner?: boolean;
+  isDraggable?: boolean;
+}
+
 /** An evees info with
  *  - one official remote with the official perspective
  *  - one defaultRemote with one perspective per user */
 export class EveesInfoUserBased extends EveesInfoBase {
   logger = new Logger('EVEES-INFO-UserBased');
 
-  @property({ type: Boolean, attribute: 'show-proposals' })
-  showProposals: boolean = false;
+  @property({ type: Object })
+  eveesInfoConfig!: EveesInfoConfig;
 
-  @property({ type: Boolean, attribute: 'show-draft' })
-  showDraftControl: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-edit-draft' })
-  showEditDraft: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-info' })
-  showInfo: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-icon' })
-  showIcon: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-acl' })
-  showAcl: boolean = false;
-
-  @property({ type: Boolean, attribute: 'show-debug' })
-  showDebugInfo: boolean = false;
-
-  @property({ type: String, attribute: 'official-owner' })
-  officialOwner!: string;
-
-  @property({ type: Boolean, attribute: 'check-owner' })
-  checkOwner: boolean = false;
+  @property({ attribute: false })
+  loading: boolean = true;
 
   @property({ attribute: false })
   officialId: string | undefined = undefined;
@@ -143,11 +135,11 @@ export class EveesInfoUserBased extends EveesInfoBase {
     const sortOnTimestamp = (p1, p2) =>
       p1.object.payload.timestamp - p2.object.payload.timestamp;
 
-    if (this.checkOwner) {
+    if (this.eveesInfoConfig.checkOwner) {
       const officials = perspectives.filter(
         (p) =>
           p.object.payload.remote === officialRemote.id &&
-          p.object.payload.creatorId === this.officialOwner
+          p.object.payload.creatorId === this.eveesInfoConfig.officialOwner
       );
       const officialsSorted = officials.sort(sortOnTimestamp).reverse();
       this.officialId =
@@ -391,7 +383,8 @@ export class EveesInfoUserBased extends EveesInfoBase {
             </uprtcl-icon-button>
           `
         : ''}
-      ${this.isLoggedOnDefault
+      ${(this.isLoggedOnDefault && this.loading) ||
+      (this.officialId !== undefined && this.officialId !== this.mineId)
         ? html`
             <div class="mine-and-settings">
               <uprtcl-button-loading
@@ -404,9 +397,9 @@ export class EveesInfoUserBased extends EveesInfoBase {
                 ?loading=${this.creatingMine}
                 transition
               >
-                mine
+                ${this.loading ? '' : this.mineId ? 'mine' : 'fork'}
               </uprtcl-button-loading>
-              ${this.isMine && this.showEditDraft
+              ${this.isMine && this.eveesInfoConfig.showMyDraft
                 ? html`
                     <div class="options-menu-container">
                       <uprtcl-options-menu
@@ -451,7 +444,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
                   color=${eveeColor(this.uref)}
                 ></evees-author>
               `
-            : html` other `}
+            : html`other`}
         </uprtcl-button>
         ${this.renderOtherPerspectives()}
       </uprtcl-popper>
@@ -493,7 +486,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
 
     return html`
       <div class="left-buttons">
-        ${this.showInfo
+        ${this.eveesInfoConfig.showInfo
           ? html`
               <uprtcl-popper
                 icon="info"
@@ -502,23 +495,23 @@ export class EveesInfoUserBased extends EveesInfoBase {
                 position="bottom-left"
                 class="info-popper margin-right"
               >
-                ${this.showIcon
+                ${this.eveesInfoConfig.showIcon
                   ? html`
                       <div class="icon-container">${this.renderIcon()}</div>
                     `
                   : ''}
-                ${this.showAcl
+                ${this.eveesInfoConfig.showAcl
                   ? html`
                       <div class="permissions-container">
                         ${this.renderPermissions()}
                       </div>
                     `
                   : ''}
-                ${this.showDebugInfo ? this.renderInfo() : ''}
+                ${this.eveesInfoConfig.showDebugInfo ? this.renderInfo() : ''}
               </uprtcl-popper>
             `
           : ''}
-        ${this.showProposals
+        ${this.eveesInfoConfig.showProposals
           ? html`
               <uprtcl-popper
                 id="proposals-popper"
@@ -540,7 +533,9 @@ export class EveesInfoUserBased extends EveesInfoBase {
           : ''}
       </div>
       <div class="center-buttons">
-        ${this.showDraftControl ? this.renderDraftControl() : ''}
+        ${this.eveesInfoConfig.showDraftControl
+          ? this.renderDraftControl()
+          : ''}
       </div>
       ${this.showUpdatesDialog ? this.renderUpdatesDialog() : ''}
     `;

@@ -28,6 +28,7 @@ import {
   CONTENT_UPDATED_TAG,
   ContentUpdatedEvent,
   EveesConfig,
+  EveesInfoConfig,
 } from '@uprtcl/evees';
 import { MenuConfig } from '@uprtcl/common-ui';
 import { ApolloClientModule } from '@uprtcl/graphql';
@@ -36,13 +37,13 @@ import { CASStore, loadEntity } from '@uprtcl/multiplatform';
 import { Wiki } from '../types';
 
 import { WikiBindings } from '../bindings';
-import { DEFAULT_COLOR } from '../../../evees/dist/types/uprtcl-evees';
 
 const MAX_LENGTH = 999;
 
 interface PageData {
   id: string;
   title: string;
+  draggingOver: boolean;
 }
 
 export class WikiDrawerContent extends moduleConnect(LitElement) {
@@ -54,11 +55,8 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
   @property({ type: String })
   color!: string;
 
-  @property({ type: String, attribute: 'official-owner' })
-  officialOwner!: string;
-
-  @property({ type: Boolean, attribute: 'check-owner' })
-  checkOwner: boolean = false;
+  @property({ type: Object })
+  eveesInfoConfig!: EveesInfoConfig;
 
   @property({ type: Boolean })
   editable: boolean = false;
@@ -189,6 +187,7 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
         return {
           id: pageId,
           title,
+          draggingOver: false,
         };
       }
     );
@@ -209,10 +208,23 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
     return remoteInstance.store;
   }
 
-  handlePageDrag(e, pageId) {
-    const dragged = { uref: pageId, parentId: this.uref };
+  handlePageDrag(e, ix) {
+    if (!this.pagesList) throw new Error();
+    const dragged = { uref: this.pagesList[ix].id, parentId: this.uref };
     this.logger.info('dragging', dragged);
     e.dataTransfer.setData('text/plain', JSON.stringify(dragged));
+  }
+
+  dragEnterOver(e, ix) {
+    if (!this.pagesList) throw new Error();
+    this.pagesList[ix].draggingOver = true;
+    this.requestUpdate();
+  }
+
+  dragLeaveOver(e, ix) {
+    if (!this.pagesList) throw new Error();
+    this.pagesList[ix].draggingOver = false;
+    this.requestUpdate();
   }
 
   async handlePageDrop(e) {
@@ -513,27 +525,36 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
     if (selected) classes.push('title-selected');
 
     return html`
-      <div
-        class=${classes.join(' ')}
-        draggable="false"
-        @dragstart=${(e) => this.handlePageDrag(e, page.id)}
-        @click=${() => this.selectPage(ix)}
-      >
-        <div class="text-container">
-          ${text.length < MAX_LENGTH ? text : `${text.slice(0, MAX_LENGTH)}...`}
+      <div class="page-item-row">
+        <div
+          class=${classes.join(' ')}
+          draggable="true"
+          @dragstart=${(e) => this.handlePageDrag(e, ix)}
+          @dragenter=${(e) => this.dragEnterOver(e, ix)}
+          @dragleave=${(e) => this.dragLeaveOver(e, ix)}
+          @click=${() => this.selectPage(ix)}
+        >
+          <div class="text-container">
+            ${text.length < MAX_LENGTH
+              ? text
+              : `${text.slice(0, MAX_LENGTH)}...`}
+          </div>
+          ${this.editableActual && showOptions
+            ? html`
+                <div class="item-menu-container">
+                  <uprtcl-options-menu
+                    class="options-menu"
+                    @option-click=${(e) => this.optionOnPage(ix, e.detail.key)}
+                    .config=${menuConfig}
+                    skinny
+                  >
+                  </uprtcl-options-menu>
+                </div>
+              `
+            : ''}
         </div>
-        ${this.editableActual && showOptions
-          ? html`
-              <div class="item-menu-container">
-                <uprtcl-options-menu
-                  class="options-menu"
-                  @option-click=${(e) => this.optionOnPage(ix, e.detail.key)}
-                  .config=${menuConfig}
-                  skinny
-                >
-                </uprtcl-options-menu>
-              </div>
-            `
+        ${page.draggingOver
+          ? html`<div class="title-dragging-over"></div>`
           : ''}
       </div>
     `;
@@ -577,9 +598,7 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
                     ] as string}
                     parent-id=${this.uref}
                     color=${this.color}
-                    official-owner=${this.officialOwner}
-                    ?check-owner=${this.checkOwner}
-                    show-info
+                    .eveesInfoConfig=${this.eveesInfoConfig}
                   >
                   </documents-editor>
                 </div>
@@ -622,6 +641,9 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
           margin-top: 22px;
           display: block;
         }
+        .page-item-row {
+          position: relative;
+        }
         .page-item {
           min-height: 48px;
           cursor: pointer;
@@ -660,6 +682,13 @@ export class WikiDrawerContent extends moduleConnect(LitElement) {
         .title-selected {
           font-weight: bold;
           background-color: rgb(200, 200, 200, 0.2);
+        }
+        .title-dragging-over {
+          position: absolute;
+          bottom: -1px;
+          height: 2px;
+          background-color: #2196f3;
+          width: 100%;
         }
         .empty {
           width: 100%;

@@ -25,7 +25,11 @@ import {
 import { ApolloClientModule } from '@uprtcl/graphql';
 import { WikiDrawerContent } from './wiki-drawer-content';
 import { loadEntity } from '@uprtcl/multiplatform';
-import { CREATE_PROPOSAL, PROPOSAL_CREATED_TAG } from '@uprtcl/evees';
+import {
+  CREATE_PROPOSAL,
+  PROPOSAL_CREATED_TAG,
+  EveesInfoConfig,
+} from '@uprtcl/evees';
 import { ProposalCreatedEvent } from '@uprtcl/evees/dist/types/types';
 
 export class WikiDrawer extends moduleConnect(LitElement) {
@@ -34,23 +38,14 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   @property({ type: String, attribute: 'uref' })
   firstRef!: string;
 
-  @property({ type: Boolean, attribute: 'show-proposals' })
-  showProposals: boolean = false;
-
   @property({ type: Boolean, attribute: 'show-back' })
   showBack: boolean = false;
 
-  @property({ type: Boolean, attribute: 'show-acl' })
-  showAcl: boolean = false;
+  @property({ type: Object })
+  eveesInfoConfig!: EveesInfoConfig;
 
   @property({ attribute: false })
   uref!: string;
-
-  @property({ attribute: false })
-  officialOwner!: string;
-
-  @property({ type: Boolean, attribute: 'check-owner' })
-  checkOwner: boolean = false;
 
   @property({ attribute: false })
   loading: boolean = true;
@@ -89,7 +84,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
     );
     if (!official)
       throw new Error(`cant find official perspective ${this.firstRef}`);
-    this.officialOwner = official.object.payload.creatorId;
+    this.eveesInfoConfig.officialOwner = official.object.payload.creatorId;
 
     await this.load();
     this.loading = false;
@@ -185,15 +180,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
         id="evees-info-row"
         uref=${this.uref}
         first-uref=${this.firstRef}
-        official-owner=${this.officialOwner}
-        ?check-owner=${this.checkOwner}
-        ?show-acl=${this.showAcl}
-        ?show-proposals=${this.showProposals}
-        show-info
-        show-icon
-        ?show-debug=${false}
-        show-draft
-        show-edit-draft
+        .eveesInfoConfig=${this.eveesInfoConfig}
       >
       </evees-info-user-based>
     `;
@@ -236,8 +223,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
           uref=${this.uref}
           editable
           color=${this.color()}
-          official-owner=${this.officialOwner}
-          ?check-owner=${this.checkOwner}
+          .eveesInfoConfig=${this.eveesInfoConfig}
         >
         </wiki-drawer-content>
       </div>

@@ -1,7 +1,6 @@
 import { LitElement, html, css, property } from 'lit-element';
 import { moduleConnect } from '@uprtcl/micro-orchestrator';
-import { EveesModule, EveesRemote } from '@uprtcl/evees';
-import { HttpEthAuthProvider } from '@uprtcl/http-provider';
+import { EveesInfoConfig } from '@uprtcl/evees';
 
 import { Router } from '@vaadin/router';
 
@@ -27,13 +26,24 @@ export class Doc extends moduleConnect(LitElement) {
 
   render() {
     if (this.docId === undefined) return '';
-    if (this.loading)
-      return html`
-        <uprtcl-loading></uprtcl-loading>
-      `;
+    if (this.loading) return html` <uprtcl-loading></uprtcl-loading> `;
+
+    const eveesInfoConfig: EveesInfoConfig = {
+      showProposals: true,
+      showAcl: true,
+      showInfo: true,
+      showIcon: true,
+      showDraftControl: true,
+      checkOwner: true,
+      showMyDraft: true,
+    };
 
     return html`
-      <wiki-drawer show-proposals show-acl @back=${() => this.goHome()} uref=${this.docId}></wiki-drawer>
+      <wiki-drawer
+        uref=${this.docId}
+        .eveesInfoConfig=${eveesInfoConfig}
+        @back=${() => this.goHome()}
+      ></wiki-drawer>
     `;
   }
 
