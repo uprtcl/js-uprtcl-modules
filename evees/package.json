@@ -4,7 +4,7 @@
   "description": "Cortex module that provides generic version control for any content-addressable content to become an Evolving Entity (Evee)",
   "homepage": "https://uprtcl.io",
   "scripts": {
-    "upgrade-uprtcl": "npm i @uprtcl/common-ui@latest @uprtcl/cortex@latest @uprtcl/graphql@latest @uprtcl/ipfs-provider@latest @uprtcl/lenses@latest @uprtcl/micro-orchestrator@latest @uprtcl/multiplatform@latest",
+    "update-uprtcl": "ncu -u \"/^@uprtcl.*$/\"",
     "clean": "rimraf dist",
     "dev": "rollup -w -c rollup.config.ts",
     "build": "npm run clean && rollup -c rollup.config.ts",
@@ -12,13 +12,13 @@
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
   "dependencies": {
-    "@uprtcl/common-ui": "^0.1.0-beta.8",
-    "@uprtcl/cortex": "^0.1.0-beta.4",
-    "@uprtcl/graphql": "^0.1.0-beta.4",
-    "@uprtcl/ipfs-provider": "^0.1.0-beta.5",
-    "@uprtcl/lenses": "^0.1.0-beta.4",
-    "@uprtcl/micro-orchestrator": "^0.1.0-beta.4",
-    "@uprtcl/multiplatform": "^0.1.0-beta.4",
+    "@uprtcl/common-ui": "0.1.0-beta.8",
+    "@uprtcl/cortex": "0.1.0-beta.4",
+    "@uprtcl/graphql": "0.1.0-beta.4",
+    "@uprtcl/ipfs-provider": "0.1.0-beta.6",
+    "@uprtcl/lenses": "0.1.0-beta.4",
+    "@uprtcl/micro-orchestrator": "0.1.0-beta.4",
+    "@uprtcl/multiplatform": "0.1.0-beta.4",
     "apollo-boost": "^0.4.7",
     "cbor-js": "^0.1.0",
     "cids": "^1.0.0",
@@ -45,7 +45,8 @@
     "rollup-plugin-sourcemaps": "^0.5.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "temp-dir": "^2.0.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "npm-check-updates": "^10.2.1"
   },
   "repository": {
     "type": "git",

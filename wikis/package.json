@@ -4,6 +4,7 @@
   "description": "Cortex module implementing texts and folders",
   "homepage": "https://uprtcl.io",
   "scripts": {
+    "update-uprtcl": "ncu -u \"/^@uprtcl.*$/\"",
     "clean": "rimraf dist",
     "dev": "rollup -w -c rollup.config.ts",
     "build": "npm run clean && rollup -c rollup.config.ts",
@@ -16,9 +17,9 @@
     "@uprtcl/documents": "^0.1.0-beta.8",
     "@uprtcl/evees": "^0.1.0-beta.8",
     "@uprtcl/graphql": "^0.1.0-beta.4",
-    "@uprtcl/holochain-provider": "^0.1.0-beta.5",
-    "@uprtcl/http-provider": "^0.1.0-beta.5",
-    "@uprtcl/ipfs-provider": "^0.1.0-beta.5",
+    "@uprtcl/holochain-provider": "^0.1.0-beta.6",
+    "@uprtcl/http-provider": "^0.1.0-beta.6",
+    "@uprtcl/ipfs-provider": "^0.1.0-beta.6",
     "@uprtcl/lenses": "^0.1.0-beta.4",
     "@uprtcl/micro-orchestrator": "^0.1.0-beta.4",
     "@uprtcl/multiplatform": "^0.1.0-beta.4",
@@ -27,7 +28,8 @@
     "inversify": "^5.0.1",
     "lit-element": "^2.3.0",
     "redux": "^4.0.4",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "npm-check-updates": "^10.2.1"
   },
   "devDependencies": {
     "@open-wc/testing": "^2.5.6",
