@@ -4,7 +4,6 @@ import { LitElement, property, html, css } from 'lit-element';
 import { ApolloClientModule } from '@uprtcl/graphql';
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 
-import { eveeColor } from './support';
 import { EveesBindings } from './../bindings';
 import { EveesRemote } from './../services/evees.remote';
 import { EveesHelpers } from '../graphql/evees.helpers';
@@ -124,22 +123,6 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
     this.logger.info('getOtherPersepectives() - post', {
       persperspectivesData: this.perspectivesData,
     });
-  }
-
-  perspectiveClicked(id: string) {
-    this.dispatchEvent(
-      new CustomEvent('perspective-selected', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          id,
-        },
-      })
-    );
-  }
-
-  perspectiveColor(creatorId: string) {
-    return eveeColor(creatorId);
   }
 
   perspectiveButtonClicked(event: Event, perspectiveData: PerspectiveData) {
