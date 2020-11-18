@@ -37,6 +37,7 @@ export { EveesBindings } from './bindings';
 /** Elements */
 export { CommitHistory } from './elements/evees-commit-history';
 export { EveesPerspectivesList } from './elements/evees-perspectives-list';
+export { EveesBaseElement } from './elements/evees-base';
 export { EveesInfoPopper } from './elements/evees-info-popper';
 export { EveesInfoPage } from './elements/evees-info-page';
 export { EveesInfoBase } from './elements/evees-info-base';
