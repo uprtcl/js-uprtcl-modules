@@ -2,6 +2,7 @@ import { LitElement, property, html, css, query } from 'lit-element';
 
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 import { eveeColor } from './support';
+import { EveesHelpers } from '../graphql/evees.helpers';
 
 interface PerspectiveData {
     id: string;
@@ -20,8 +21,8 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
     @property({ type: Boolean, attribute: 'has-meta' })
     hasMeta!: boolean;
 
-    @property({ type: String, attribute: 'perspective-data-id' })
-    perspectiveDataId!: string;
+    @property({ type: String, attribute: 'other-perspective-id' })
+    otherPerspectiveId!: string;
 
     @property({ type: String, attribute: 'creator-id' })
     creatorId!: string;
@@ -52,8 +53,8 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
                   this.creatorId
               )}`}
               hasMeta
-              ?selected=${this.perspectiveId === this.perspectiveDataId}
-              @click=${() => this.perspectiveClicked(this.perspectiveDataId)}
+              ?selected=${this.perspectiveId === this.otherPerspectiveId}
+              @click=${() => this.perspectiveClicked(this.otherPerspectiveId)}
             >
                 <evees-author
                   show-name
