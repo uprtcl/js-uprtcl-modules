@@ -18,25 +18,23 @@ import { DocumentTextNodeEditor } from './elements/prosemirror/documents-text-no
 import { DocumentsBindings } from './bindings';
 import { DocumentEditor } from './elements/document-editor';
 import { TextNodeDiff } from './elements/document-text-node-diff';
+import { CustomBlocks } from './types';
 
-/**
- * Configure a documents module with the given stores
- *
- * Depends on these modules being present: LensesModule, CortexModule, DiscoveryModule, i18nBaseModule
- *
- * Example usage:
- *
- * @param stores an array of CASStores in which the documents objects can be stored/retrieved from
- */
 export class DocumentsModule extends EveesContentModule {
   static id = 'documents-module';
-
   static bindings = DocumentsBindings;
-
   providerIdentifier = DocumentsBindings.DocumentsRemote;
+
+  constructor(protected customBlocks: CustomBlocks) {
+    super();
+  }
 
   async onLoad(container: interfaces.Container) {
     super.onLoad(container);
+    container
+      .bind(DocumentsBindings.CustomBlocks)
+      .toConstantValue(this.customBlocks);
+
     customElements.define('documents-text-node-editor', DocumentTextNodeEditor);
     customElements.define('documents-editor', DocumentEditor);
     customElements.define('documents-text-node-diff', TextNodeDiff);

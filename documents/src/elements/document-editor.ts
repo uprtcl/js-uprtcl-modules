@@ -40,12 +40,12 @@ import {
 import { MenuConfig } from '@uprtcl/common-ui';
 import { loadEntity } from '@uprtcl/multiplatform';
 
-import { TextType, DocNode } from '../types';
+import { TextType, DocNode, CustomBlocks } from '../types';
 import { HasDocNodeLenses } from '../patterns/document-patterns';
 import { icons } from './prosemirror/icons';
 import { DocumentsBindings } from '../bindings';
 
-const LOGINFO = false;
+const LOGINFO = true;
 const SELECTED_BACKGROUND = 'rgb(200,200,200,0.2);';
 const PLACEHOLDER_TOKEN = '_PLACEHOLDER_';
 
@@ -99,12 +99,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   protected remotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
   protected editableRemotesIds!: string[];
+  protected customBlocks!: CustomBlocks;
 
   draftService = new EveesDraftsLocal();
 
   async firstUpdated() {
     this.remotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
+    this.customBlocks = this.request(DocumentsBindings.CustomBlocks);
     const config = this.request(EveesModule.bindings.Config) as EveesConfig;
     this.editableRemotesIds = config.editableRemotesIds
       ? config.editableRemotesIds
@@ -199,7 +201,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const entity = await loadEntity(this.client, uref);
     if (!entity) throw Error(`Entity not found ${uref}`);
 
-    let entityType: string = this.recognizer.recognizeType(entity);
+    let entityType = this.recognizer.recognizeType(entity);
 
     let editable = false;
     let remoteId: string | undefined;
@@ -271,6 +273,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const data: Entity<any> | undefined = await loadEntity(this.client, dataId);
     if (!data) throw Error('Data undefined');
 
+    const dataType = this.recognizer.recognizeType(data);
+    const canConvertTo = Object.getOwnPropertyNames(
+      this.customBlocks[dataType].canConvertTo
+    );
+
     const hasChildren: HasChildren = this.recognizer
       .recognizeBehaviours(data)
       .find((b) => (b as HasChildren).getChildrenLinks);
@@ -301,6 +308,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       childrenNodes: [],
       data,
       draft: data ? data.object : undefined,
+      draftType: dataType,
       coord,
       level,
       headId,
@@ -310,6 +318,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       context,
       focused: false,
       timestamp: Date.now(),
+      canConvertTo,
     };
 
     return node;
@@ -555,11 +564,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   }
 
   async createEntity(content: any, remote: string): Promise<string> {
-    const entityType = this.recognizer.recognizeType({
-      id: '',
-      object: content,
-    });
-
     const remoteInstance = this.remotes.find((r) => r.id === remote);
     if (!remoteInstance)
       throw new Error(`Remote not found for remote ${remote}`);
@@ -665,6 +669,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         `hasDocNodeLenses not found for object ${JSON.stringify(draftForReco)}`
       );
 
+    const dataType = this.recognizer.recognizeType(draftForReco);
+    const canConvertTo = Object.getOwnPropertyNames(
+      this.customBlocks[dataType].canConvertTo
+    );
+
     const randint = 0 + Math.floor((10000 - 0) * Math.random());
     const uref = PLACEHOLDER_TOKEN + `-${ix !== undefined ? ix : 0}-${randint}`;
 
@@ -681,6 +690,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       ix,
       parent,
       draft,
+      draftType: dataType,
       coord,
       level,
       childrenNodes: [],
@@ -689,6 +699,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       editable: true,
       focused: false,
       timestamp: Date.now(),
+      canConvertTo,
     };
   }
 
@@ -1017,6 +1028,16 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
+  async convertedTo(node: DocNode, type: string) {
+    if (!node.draftType)
+      throw new Error(`Draft type not defined for ${JSON.stringify(node)}`);
+
+    const newObject = await this.customBlocks[node.draftType].canConvertTo[
+      type
+    ](node.uref, this.client);
+    this.contentChanged(node, newObject);
+  }
+
   async joinBackward(node: DocNode, tail: string) {
     if (LOGINFO) this.logger.log('joinBackward()', { node, tail });
 
@@ -1283,6 +1304,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
             split: (tail: string, asChild: boolean) =>
               this.split(node, tail, asChild),
             appended: () => this.appended(node),
+            convertedTo: (type) => this.convertedTo(node, type),
           })}
           ${hasIcon ? html` <div class="node-mark">${icon}</div> ` : ''}
         </div>
@@ -1324,6 +1346,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         style=${styleMap({
           backgroundColor: node.focused ? SELECTED_BACKGROUND : 'transparent',
         })}
+        class="doc-node-container"
       >
         ${node.hasDocNodeLenses.docNodeLenses().length > 0
           ? this.renderHere(node)
@@ -1451,8 +1474,12 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         width: 90px;
       }
 
+      .doc-node-container {
+        border-radius: 4px;
+      }
+
       .row {
-        margin-bottom: 8px;
+        padding: 4px 0px;
         display: flex;
         flex-direction: row;
       }

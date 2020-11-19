@@ -224,8 +224,4 @@ export class EveesBaseElement<T> extends moduleConnect(LitElement) {
     const result = await this.spliceChildren(this.data.object, [], index, 1);
     return result.entity;
   }
-
-  static get styles() {
-    return [styles, css``];
-  }
 }
