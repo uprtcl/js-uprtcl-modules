@@ -71,7 +71,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   defaultType: string = EveesModule.bindings.PerspectiveType;
 
   @property({ type: Object })
-  eveesInfoConfig!: EveesInfoConfig;
+  eveesInfoConfig: EveesInfoConfig = {};
 
   @property({ attribute: false })
   docHasChanges: boolean = false;
@@ -1061,6 +1061,19 @@ export class DocumentEditor extends moduleConnect(LitElement) {
 
     /** update all the node properties */
     node = this.draftToPlaceholder(newObject, node.parent, node.ix);
+
+    const loadChildren = node.hasChildren
+      .getChildrenLinks({ id: '', object: node.draft })
+      .map(
+        async (child, ix): Promise<DocNode> => {
+          return child !== undefined && child !== ''
+            ? await this.loadNodeRec(child, ix, node)
+            : node.childrenNodes[ix];
+        }
+      );
+
+    node.childrenNodes = await Promise.all(loadChildren);
+
     this.replaceNode(node);
 
     this.contentChanged(node, newObject);
@@ -1291,6 +1304,10 @@ export class DocumentEditor extends moduleConnect(LitElement) {
           paddingTop = '0px';
           break;
       }
+    }
+
+    if (node.draftType === 'Quantity') {
+      paddingTop = '14px';
     }
 
     return html`
