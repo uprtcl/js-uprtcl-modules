@@ -703,6 +703,29 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     };
   }
 
+  /** replace the actual node object in the doc tree */
+  replaceNode(node: DocNode) {
+    const coord = [...node.coord];
+
+    /** root node */
+    let leaf = this.doc;
+    let thisCoord = coord.shift();
+    if (thisCoord !== 0)
+      throw new Error('What? the first coordinate must always be zero');
+    if (!leaf) throw new Error('doc not defined');
+
+    /** navigate to the parent node */
+    while (coord.length > 1) {
+      thisCoord = coord.shift();
+      if (!thisCoord) throw new Error('thisCoord not defined');
+      leaf = leaf.childrenNodes[thisCoord];
+      if (!leaf) throw new Error('doc not defined');
+    }
+
+    /** now we are at the parent */
+    leaf.childrenNodes[thisCoord] = node;
+  }
+
   createPlaceholder(draft: any, parent?: DocNode, ix?: number): DocNode {
     const node = this.draftToPlaceholder(draft, parent, ix);
     /** async store */
@@ -1035,6 +1058,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const newObject = await this.customBlocks[node.draftType].canConvertTo[
       type
     ](node.uref, this.client);
+
+    /** update all the node properties */
+    node = this.draftToPlaceholder(newObject, node.parent, node.ix);
+    this.replaceNode(node);
+
     this.contentChanged(node, newObject);
   }
 
