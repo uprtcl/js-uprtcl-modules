@@ -40,12 +40,12 @@ import {
 import { MenuConfig } from '@uprtcl/common-ui';
 import { loadEntity } from '@uprtcl/multiplatform';
 
-import { TextType, DocNode } from '../types';
+import { TextType, DocNode, CustomBlocks } from '../types';
 import { HasDocNodeLenses } from '../patterns/document-patterns';
 import { icons } from './prosemirror/icons';
 import { DocumentsBindings } from '../bindings';
 
-const LOGINFO = false;
+const LOGINFO = true;
 const SELECTED_BACKGROUND = 'rgb(200,200,200,0.2);';
 const PLACEHOLDER_TOKEN = '_PLACEHOLDER_';
 
@@ -71,7 +71,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   defaultType: string = EveesModule.bindings.PerspectiveType;
 
   @property({ type: Object })
-  eveesInfoConfig!: EveesInfoConfig;
+  eveesInfoConfig: EveesInfoConfig = {};
 
   @property({ attribute: false })
   docHasChanges: boolean = false;
@@ -99,12 +99,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   protected remotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
   protected editableRemotesIds!: string[];
+  protected customBlocks!: CustomBlocks;
 
   draftService = new EveesDraftsLocal();
 
   async firstUpdated() {
     this.remotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
+    this.customBlocks = this.request(DocumentsBindings.CustomBlocks);
     const config = this.request(EveesModule.bindings.Config) as EveesConfig;
     this.editableRemotesIds = config.editableRemotesIds
       ? config.editableRemotesIds
@@ -199,7 +201,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const entity = await loadEntity(this.client, uref);
     if (!entity) throw Error(`Entity not found ${uref}`);
 
-    let entityType: string = this.recognizer.recognizeType(entity);
+    let entityType = this.recognizer.recognizeType(entity);
 
     let editable = false;
     let remoteId: string | undefined;
@@ -271,6 +273,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const data: Entity<any> | undefined = await loadEntity(this.client, dataId);
     if (!data) throw Error('Data undefined');
 
+    const dataType = this.recognizer.recognizeType(data);
+    const canConvertTo = this.customBlocks
+      ? Object.getOwnPropertyNames(this.customBlocks[dataType].canConvertTo)
+      : [];
+
     const hasChildren: HasChildren = this.recognizer
       .recognizeBehaviours(data)
       .find((b) => (b as HasChildren).getChildrenLinks);
@@ -301,6 +308,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       childrenNodes: [],
       data,
       draft: data ? data.object : undefined,
+      draftType: dataType,
       coord,
       level,
       headId,
@@ -310,6 +318,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       context,
       focused: false,
       timestamp: Date.now(),
+      canConvertTo,
     };
 
     return node;
@@ -429,9 +438,13 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       id: '',
       object: node.draft,
     })(node.childrenNodes.map((node) => node.uref));
-    this.setNodeDraft(node, object);
 
-    await this.preparePersist(node, defaultAuthority, message);
+    /** update draft (not on local storage) */
+    node.draft = object;
+
+    if (node.isPlaceholder) {
+      await this.preparePersist(node, defaultAuthority, message);
+    }
   }
 
   async derivePerspective(node: DocNode): Promise<Secured<Perspective>> {
@@ -463,10 +476,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
 
   /* bottom up traverse the tree to set the uref of all placeholders */
   async preparePersist(node: DocNode, defaultRemote: string, message?: string) {
-    if (!node.isPlaceholder) {
-      return;
-    }
-
     switch (this.defaultType) {
       case EveesModule.bindings.PerspectiveType:
         node.remote = node.remote !== undefined ? node.remote : defaultRemote;
@@ -555,11 +564,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   }
 
   async createEntity(content: any, remote: string): Promise<string> {
-    const entityType = this.recognizer.recognizeType({
-      id: '',
-      object: content,
-    });
-
     const remoteInstance = this.remotes.find((r) => r.id === remote);
     if (!remoteInstance)
       throw new Error(`Remote not found for remote ${remote}`);
@@ -665,6 +669,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         `hasDocNodeLenses not found for object ${JSON.stringify(draftForReco)}`
       );
 
+    const dataType = this.recognizer.recognizeType(draftForReco);
+    const canConvertTo = Object.getOwnPropertyNames(
+      this.customBlocks[dataType].canConvertTo
+    );
+
     const randint = 0 + Math.floor((10000 - 0) * Math.random());
     const uref = PLACEHOLDER_TOKEN + `-${ix !== undefined ? ix : 0}-${randint}`;
 
@@ -681,6 +690,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       ix,
       parent,
       draft,
+      draftType: dataType,
       coord,
       level,
       childrenNodes: [],
@@ -689,7 +699,31 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       editable: true,
       focused: false,
       timestamp: Date.now(),
+      canConvertTo,
     };
+  }
+
+  /** replace the actual node object in the doc tree */
+  replaceNode(node: DocNode) {
+    const coord = [...node.coord];
+
+    /** root node */
+    let leaf = this.doc;
+    let thisCoord = coord.shift();
+    if (thisCoord !== 0)
+      throw new Error('What? the first coordinate must always be zero');
+    if (!leaf) throw new Error('doc not defined');
+
+    /** navigate to the parent node */
+    while (coord.length > 1) {
+      thisCoord = coord.shift();
+      if (!thisCoord) throw new Error('thisCoord not defined');
+      leaf = leaf.childrenNodes[thisCoord];
+      if (!leaf) throw new Error('doc not defined');
+    }
+
+    /** now we are at the parent */
+    leaf.childrenNodes[thisCoord] = node;
   }
 
   createPlaceholder(draft: any, parent?: DocNode, ix?: number): DocNode {
@@ -725,7 +759,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const getNewNodes = elements.map((el, ix) => {
       const elIndex = (index as number) + ix;
       if (typeof el !== 'string') {
-        if (el.object !== undefined && el.entityType !== undefined) {
+        if (el.object !== undefined) {
           /** element is an object from which a DocNode should be create */
           const placeholder = this.createPlaceholder(el.object, node, elIndex);
           return Promise.resolve(placeholder);
@@ -827,16 +861,12 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     }
   }
 
-  async createChild(
-    node: DocNode,
-    newEntity: any,
-    entityType: string,
-    index?: number
-  ) {
-    if (LOGINFO)
-      this.logger.log('createChild()', { node, newEntity, entityType, index });
+  async createChild(node: DocNode, newEntity: any, index?: number) {
+    if (LOGINFO) this.logger.log('createChild()', { node, newEntity, index });
 
-    await this.spliceChildren(node, [{ object: newEntity, entityType }], 0);
+    if (typeof newEntity !== 'string') newEntity = { object: newEntity };
+
+    await this.spliceChildren(node, [newEntity], 0);
 
     /** focus child */
     const child = node.childrenNodes[0];
@@ -849,18 +879,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
-  async createSibling(node: DocNode, newEntity: any, entityType: string) {
+  async createSibling(node: DocNode, newEntity: any) {
     if (!node.parent) throw new Error('Node dont have a parent');
     if (node.ix === undefined) throw new Error('Node dont have an ix');
 
-    if (LOGINFO)
-      this.logger.log('createSibling()', { node, newEntity, entityType });
+    if (LOGINFO) this.logger.log('createSibling()', { node, newEntity });
+    if (typeof newEntity !== 'string') newEntity = { object: newEntity };
 
-    await this.spliceChildren(
-      node.parent,
-      [{ object: newEntity, entityType }],
-      node.ix + 1
-    );
+    await this.spliceChildren(node.parent, [newEntity], node.ix + 1);
 
     /** focus sibling */
     const sibling = node.parent.childrenNodes[node.ix + 1];
@@ -1017,6 +1043,34 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
+  async convertedTo(node: DocNode, type: string) {
+    if (!node.draftType)
+      throw new Error(`Draft type not defined for ${JSON.stringify(node)}`);
+
+    const newObject = await this.customBlocks[node.draftType].canConvertTo[
+      type
+    ](node.uref, this.client);
+
+    /** update all the node properties */
+    node = this.draftToPlaceholder(newObject, node.parent, node.ix);
+
+    const loadChildren = node.hasChildren
+      .getChildrenLinks({ id: '', object: node.draft })
+      .map(
+        async (child, ix): Promise<DocNode> => {
+          return child !== undefined && child !== ''
+            ? await this.loadNodeRec(child, ix, node)
+            : node.childrenNodes[ix];
+        }
+      );
+
+    node.childrenNodes = await Promise.all(loadChildren);
+
+    this.replaceNode(node);
+
+    this.contentChanged(node, newObject);
+  }
+
   async joinBackward(node: DocNode, tail: string) {
     if (LOGINFO) this.logger.log('joinBackward()', { node, tail });
 
@@ -1057,9 +1111,9 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const dftEntity = this.defaultEntity(tail, TextType.Paragraph);
 
     if (asChild) {
-      await this.createChild(node, dftEntity.data, dftEntity.entityType, 0);
+      await this.createChild(node, dftEntity.data, 0);
     } else {
-      await this.createSibling(node, dftEntity.data, dftEntity.entityType);
+      await this.createSibling(node, dftEntity.data);
     }
 
     this.requestUpdate();
@@ -1180,24 +1234,38 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
-  dragOverEffect(e, node: DocNode) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+  draggingOver(e, node: DocNode) {
+    const wasDragging = node.draggingOver;
+    node.draggingOver = true;
+
+    /** delete the last  */
+    if (node.draggingOverTimeout) {
+      clearTimeout(node.draggingOverTimeout);
+    }
+
+    node.draggingOverTimeout = setTimeout(() => {
+      node.draggingOver = false;
+      this.requestUpdate();
+    }, 400);
+
+    if (!wasDragging) {
+      this.requestUpdate();
+    }
   }
 
   async handleDrop(e, node: DocNode) {
+    const dragged = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!dragged.uref) return;
+    if (dragged.parentId === this.uref) return;
+
     e.preventDefault();
     e.stopPropagation();
 
-    const dragged = JSON.parse(e.dataTransfer.getData('text/plain'));
-
-    if (!dragged.uref) return;
-    if (dragged.parentId === this.uref) return;
-    if (node.parent === undefined) return;
-
-    const ix =
-      node.ix !== undefined ? node.ix : node.parent.childrenNodes.length - 1;
-    await this.spliceChildren(node.parent, [dragged.uref], ix + 1, 0);
+    if (node.draft.type === TextType.Title) {
+      await this.createChild(node, dragged.uref, 0);
+    } else {
+      await this.createSibling(node, dragged.uref);
+    }
 
     this.requestUpdate();
   }
@@ -1244,10 +1312,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       }
     }
 
+    if (node.draftType === 'Quantity') {
+      paddingTop = '14px';
+    }
+
     return html`
       <div
         class="row"
-        @dragover=${(e) => this.dragOverEffect(e, node)}
+        @dragover=${(e) => this.draggingOver(e, node)}
         @drop=${(e) => this.handleDrop(e, node)}
       >
         ${!this.readOnly
@@ -1283,9 +1355,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
             split: (tail: string, asChild: boolean) =>
               this.split(node, tail, asChild),
             appended: () => this.appended(node),
+            convertedTo: (type) => this.convertedTo(node, type),
           })}
           ${hasIcon ? html` <div class="node-mark">${icon}</div> ` : ''}
         </div>
+        ${node.draggingOver ? html`<div class="row-dragging-over"></div>` : ''}
       </div>
     `;
   }
@@ -1324,6 +1398,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         style=${styleMap({
           backgroundColor: node.focused ? SELECTED_BACKGROUND : 'transparent',
         })}
+        class="doc-node-container"
       >
         ${node.hasDocNodeLenses.docNodeLenses().length > 0
           ? this.renderHere(node)
@@ -1451,10 +1526,23 @@ export class DocumentEditor extends moduleConnect(LitElement) {
         width: 90px;
       }
 
+      .doc-node-container {
+        border-radius: 4px;
+      }
+
       .row {
-        margin-bottom: 8px;
+        position: relative;
+        padding: 4px 0px;
         display: flex;
         flex-direction: row;
+      }
+
+      .row-dragging-over {
+        position: absolute;
+        bottom: -1px;
+        height: 2px;
+        background-color: #2196f3;
+        width: 100%;
       }
 
       .evee-info {
