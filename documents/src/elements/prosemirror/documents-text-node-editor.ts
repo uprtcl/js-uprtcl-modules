@@ -439,6 +439,10 @@ export class DocumentTextNodeEditor extends LitElement {
           this.setShowMenu(true);
           return true;
         },
+        drop: (view, event) => {
+          event.preventDefault();
+          return false;
+        },
       },
       nodeViews: {
         code_block: (node, view, getPos) =>

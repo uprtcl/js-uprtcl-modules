@@ -274,9 +274,9 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     if (!data) throw Error('Data undefined');
 
     const dataType = this.recognizer.recognizeType(data);
-    const canConvertTo = Object.getOwnPropertyNames(
-      this.customBlocks[dataType].canConvertTo
-    );
+    const canConvertTo = this.customBlocks
+      ? Object.getOwnPropertyNames(this.customBlocks[dataType].canConvertTo)
+      : [];
 
     const hasChildren: HasChildren = this.recognizer
       .recognizeBehaviours(data)
@@ -438,9 +438,13 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       id: '',
       object: node.draft,
     })(node.childrenNodes.map((node) => node.uref));
-    this.setNodeDraft(node, object);
 
-    await this.preparePersist(node, defaultAuthority, message);
+    /** update draft (not on local storage) */
+    node.draft = object;
+
+    if (node.isPlaceholder) {
+      await this.preparePersist(node, defaultAuthority, message);
+    }
   }
 
   async derivePerspective(node: DocNode): Promise<Secured<Perspective>> {
@@ -472,10 +476,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
 
   /* bottom up traverse the tree to set the uref of all placeholders */
   async preparePersist(node: DocNode, defaultRemote: string, message?: string) {
-    if (!node.isPlaceholder) {
-      return;
-    }
-
     switch (this.defaultType) {
       case EveesModule.bindings.PerspectiveType:
         node.remote = node.remote !== undefined ? node.remote : defaultRemote;
@@ -759,7 +759,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const getNewNodes = elements.map((el, ix) => {
       const elIndex = (index as number) + ix;
       if (typeof el !== 'string') {
-        if (el.object !== undefined && el.entityType !== undefined) {
+        if (el.object !== undefined) {
           /** element is an object from which a DocNode should be create */
           const placeholder = this.createPlaceholder(el.object, node, elIndex);
           return Promise.resolve(placeholder);
@@ -861,16 +861,12 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     }
   }
 
-  async createChild(
-    node: DocNode,
-    newEntity: any,
-    entityType: string,
-    index?: number
-  ) {
-    if (LOGINFO)
-      this.logger.log('createChild()', { node, newEntity, entityType, index });
+  async createChild(node: DocNode, newEntity: any, index?: number) {
+    if (LOGINFO) this.logger.log('createChild()', { node, newEntity, index });
 
-    await this.spliceChildren(node, [{ object: newEntity, entityType }], 0);
+    if (typeof newEntity !== 'string') newEntity = { object: newEntity };
+
+    await this.spliceChildren(node, [newEntity], 0);
 
     /** focus child */
     const child = node.childrenNodes[0];
@@ -883,18 +879,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
-  async createSibling(node: DocNode, newEntity: any, entityType: string) {
+  async createSibling(node: DocNode, newEntity: any) {
     if (!node.parent) throw new Error('Node dont have a parent');
     if (node.ix === undefined) throw new Error('Node dont have an ix');
 
-    if (LOGINFO)
-      this.logger.log('createSibling()', { node, newEntity, entityType });
+    if (LOGINFO) this.logger.log('createSibling()', { node, newEntity });
+    if (typeof newEntity !== 'string') newEntity = { object: newEntity };
 
-    await this.spliceChildren(
-      node.parent,
-      [{ object: newEntity, entityType }],
-      node.ix + 1
-    );
+    await this.spliceChildren(node.parent, [newEntity], node.ix + 1);
 
     /** focus sibling */
     const sibling = node.parent.childrenNodes[node.ix + 1];
@@ -1119,9 +1111,9 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     const dftEntity = this.defaultEntity(tail, TextType.Paragraph);
 
     if (asChild) {
-      await this.createChild(node, dftEntity.data, dftEntity.entityType, 0);
+      await this.createChild(node, dftEntity.data, 0);
     } else {
-      await this.createSibling(node, dftEntity.data, dftEntity.entityType);
+      await this.createSibling(node, dftEntity.data);
     }
 
     this.requestUpdate();
@@ -1242,24 +1234,38 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     this.requestUpdate();
   }
 
-  dragOverEffect(e, node: DocNode) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+  draggingOver(e, node: DocNode) {
+    const wasDragging = node.draggingOver;
+    node.draggingOver = true;
+
+    /** delete the last  */
+    if (node.draggingOverTimeout) {
+      clearTimeout(node.draggingOverTimeout);
+    }
+
+    node.draggingOverTimeout = setTimeout(() => {
+      node.draggingOver = false;
+      this.requestUpdate();
+    }, 400);
+
+    if (!wasDragging) {
+      this.requestUpdate();
+    }
   }
 
   async handleDrop(e, node: DocNode) {
+    const dragged = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!dragged.uref) return;
+    if (dragged.parentId === this.uref) return;
+
     e.preventDefault();
     e.stopPropagation();
 
-    const dragged = JSON.parse(e.dataTransfer.getData('text/plain'));
-
-    if (!dragged.uref) return;
-    if (dragged.parentId === this.uref) return;
-    if (node.parent === undefined) return;
-
-    const ix =
-      node.ix !== undefined ? node.ix : node.parent.childrenNodes.length - 1;
-    await this.spliceChildren(node.parent, [dragged.uref], ix + 1, 0);
+    if (node.draft.type === TextType.Title) {
+      await this.createChild(node, dragged.uref, 0);
+    } else {
+      await this.createSibling(node, dragged.uref);
+    }
 
     this.requestUpdate();
   }
@@ -1313,7 +1319,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     return html`
       <div
         class="row"
-        @dragover=${(e) => this.dragOverEffect(e, node)}
+        @dragover=${(e) => this.draggingOver(e, node)}
         @drop=${(e) => this.handleDrop(e, node)}
       >
         ${!this.readOnly
@@ -1353,6 +1359,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
           })}
           ${hasIcon ? html` <div class="node-mark">${icon}</div> ` : ''}
         </div>
+        ${node.draggingOver ? html`<div class="row-dragging-over"></div>` : ''}
       </div>
     `;
   }
@@ -1524,9 +1531,18 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       }
 
       .row {
+        position: relative;
         padding: 4px 0px;
         display: flex;
         flex-direction: row;
+      }
+
+      .row-dragging-over {
+        position: absolute;
+        bottom: -1px;
+        height: 2px;
+        background-color: #2196f3;
+        width: 100%;
       }
 
       .evee-info {

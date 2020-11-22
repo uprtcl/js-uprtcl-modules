@@ -37,6 +37,8 @@ export interface DocNode {
   hasDocNodeLenses: HasDocNodeLenses;
   hasChildren: HasChildren;
   canConvertTo: string[];
+  draggingOver?: boolean;
+  draggingOverTimeout?: any;
 }
 
 export interface DocNodeEventsHandlers {
@@ -53,7 +55,6 @@ export interface DocNodeEventsHandlers {
   convertedTo: (blockType: string) => void;
 }
 export interface CustomBlock {
-  name: string;
   default: any;
   canConvertTo: Record<
     string,

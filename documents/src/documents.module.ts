@@ -25,15 +25,17 @@ export class DocumentsModule extends EveesContentModule {
   static bindings = DocumentsBindings;
   providerIdentifier = DocumentsBindings.DocumentsRemote;
 
-  constructor(protected customBlocks: CustomBlocks) {
+  constructor(protected customBlocks?: CustomBlocks) {
     super();
   }
 
   async onLoad(container: interfaces.Container) {
     super.onLoad(container);
-    container
-      .bind(DocumentsBindings.CustomBlocks)
-      .toConstantValue(this.customBlocks);
+    if (this.customBlocks) {
+      container
+        .bind(DocumentsBindings.CustomBlocks)
+        .toConstantValue(this.customBlocks);
+    }
 
     customElements.define('documents-text-node-editor', DocumentTextNodeEditor);
     customElements.define('documents-editor', DocumentEditor);
