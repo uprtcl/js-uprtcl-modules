@@ -106,7 +106,11 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   async firstUpdated() {
     this.remotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
-    this.customBlocks = this.request(DocumentsBindings.CustomBlocks);
+    try {
+      this.customBlocks = this.request(DocumentsBindings.CustomBlocks);
+    } catch (e) {
+      this.logger.log('custom blocks not defined');
+    }
     const config = this.request(EveesModule.bindings.Config) as EveesConfig;
     this.editableRemotesIds = config.editableRemotesIds
       ? config.editableRemotesIds
