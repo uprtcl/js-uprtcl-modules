@@ -1,6 +1,6 @@
 {
   "name": "@uprtcl/evees-reader",
-  "version": "0.1.0-beta.10",
+  "version": "0.1.0-beta.11",
   "description": "Light way wervice to resoluve an Uprtcl reference into its latest data",
   "homepage": "https://uprtcl.io",
   "scripts": {
@@ -12,7 +12,7 @@
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
   "dependencies": {
-    "@uprtcl/evees": "^0.1.0-beta.10",
+    "@uprtcl/evees": "^0.1.0-beta.11",
     "@uprtcl/multiplatform": "^0.1.0-beta.4"
   },
   "devDependencies": {
