@@ -77,6 +77,8 @@ export class EveesInfoUserBased extends EveesInfoBase {
   @query('#evees-proposals-list')
   eveesProposalsList!: ProposalsList;
 
+  parentContext: string | undefined = '';
+
   async firstUpdated() {
     await super.firstUpdated();
     this.load();
@@ -117,9 +119,12 @@ export class EveesInfoUserBased extends EveesInfoBase {
       this.client,
       this.firstRef
     );
+
+     this.parentContext = first?.object.payload.context;
+
     if (!first) throw new Error(`first perspective ${this.firstRef}`);
 
-    const perspectiveIds = await this.getContextPerspectives(this.firstRef);
+    const perspectiveIds = await this.getOthersPerspectives(this.firstRef);
     const perspectives = ((await Promise.all(
       perspectiveIds.map((perspectiveId) =>
         loadEntity<Signed<Perspective>>(this.client, perspectiveId)
@@ -320,6 +325,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
         <evees-perspectives-list
           id="evees-perspectives-list"
           perspective-id=${this.uref}
+          parent-context=${this.parentContext}
           .hidePerspectives=${hidePerspectives}
           ?can-propose=${this.isLogged}
           @perspective-selected=${(e) => this.checkoutPerspective(e.detail.id)}
