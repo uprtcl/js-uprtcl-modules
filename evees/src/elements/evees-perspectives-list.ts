@@ -92,9 +92,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                 this.canWrite = await EveesHelpers.canWrite(
                   this.client,
                   this.perspectiveId
-                );        
-                
-                console.error('hey', perspective);
+                );                                        
 
                 const {
                   data: {
