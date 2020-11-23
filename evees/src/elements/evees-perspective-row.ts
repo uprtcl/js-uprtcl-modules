@@ -15,6 +15,12 @@ interface PerspectiveData {
 export class EveesPerspectiveRow extends moduleConnect(LitElement) {
     logger = new Logger('EVEES-PERSPECTIVE-ROW');
 
+    @property({ type: String, attribute: 'parent-context' })    
+    parentContext!: string;
+
+    @property({ type: String, attribute: 'context' })
+    context!: string;
+
     @property({ type: String, attribute: 'perspective-id' })
     perspectiveId!: string;
 

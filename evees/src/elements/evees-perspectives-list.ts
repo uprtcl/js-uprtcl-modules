@@ -24,6 +24,9 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
   @property({ type: String, attribute: 'perspective-id' })
   perspectiveId!: string;
 
+  @property({ type: String, attribute: 'parent-context' })
+  parentContext!: string;
+
   @property({ type: Array })
   hidePerspectives: string[] = [];
 
@@ -170,10 +173,12 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
               html`
                 <evees-perspective-row
                   perspective-id=${this.perspectiveId}
+                  parent-context=${this.parentContext}
                   hasMeta
                   perspective-data-id=${perspectiveData.id}
                   creator-id=${perspectiveData.creatorId}
                   remote-id=${perspectiveData.remote}
+                  context=${perspectiveData.context}
                 ></evees-perspective-row>
               `
             )}
