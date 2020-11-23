@@ -93,12 +93,7 @@ export const CREATE_PERSPECTIVE: DocumentNode = gql`
         remote
         path
         timestamp
-        context {
-          id
-          perspectives {
-            id
-          }
-        }
+        context
         fromPerspectiveId
         fromHeadId
       }
@@ -122,19 +117,14 @@ export const FORK_PERSPECTIVE: DocumentNode = gql`
       id
       head {
         id
-      }
-      context {
-        id
-        perspectives {
-          id
-        }
-      }
+      }      
       name
       payload {
         path
         remote
         creatorId
         timestamp
+        context
       }
     }
   }
@@ -200,6 +190,19 @@ export const GET_PERSPECTIVE_CONTEXTS = (perspectiveId: string) => {
               id
             } 
           }
+        }
+      }
+    }
+  }`;
+};
+
+export const GET_OTHER_PERSPECTIVES = (perspectiveId: string) => {
+  return gql`{
+    entity(uref: "${perspectiveId}") {
+      id
+      ... on Perspective {
+        otherPerspectives {
+          id
         }
       }
     }
