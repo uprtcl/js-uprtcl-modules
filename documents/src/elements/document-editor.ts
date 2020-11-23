@@ -674,9 +674,9 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       );
 
     const dataType = this.recognizer.recognizeType(draftForReco);
-    const canConvertTo = Object.getOwnPropertyNames(
-      this.customBlocks[dataType].canConvertTo
-    );
+    const canConvertTo = this.customBlocks
+      ? Object.getOwnPropertyNames(this.customBlocks[dataType].canConvertTo)
+      : [];
 
     const randint = 0 + Math.floor((10000 - 0) * Math.random());
     const uref = PLACEHOLDER_TOKEN + `-${ix !== undefined ? ix : 0}-${randint}`;
