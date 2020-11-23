@@ -8,12 +8,14 @@ import { EveesBindings } from './../bindings';
 import { EveesRemote } from './../services/evees.remote';
 import { EveesHelpers } from '../graphql/evees.helpers';
 
+import { GET_OTHER_PERSPECTIVES } from '../graphql/queries';
 interface PerspectiveData {
   id: string;
   name: string;
   remote: string;
   creatorId: string;
   timestamp: number;
+  context: string;
 }
 
 export class EveesPerspectivesList extends moduleConnect(LitElement) {
@@ -51,57 +53,69 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
   }
 
   async load() {
-    this.loadingPerspectives = true;
+    this.loadingPerspectives = true;    
     const result = await this.client.query({
-      query: gql`{
-        entity(uref: "${this.perspectiveId}") {
-          id
-          ... on Perspective {
-            payload {
-              remote
-              context {
-                id
-                perspectives {
-                  id
-                  name
-                  payload {
-                    creatorId
-                    timestamp
-                    remote
-                  }
-                } 
-              }
-            }
-          }
-        }
-      }`,
-    });
+      query: GET_OTHER_PERSPECTIVES(this.perspectiveId)
+    });        
 
     /** data on other perspectives (proposals are injected on them) */
     const perspectivesData: PerspectiveData[] =
-      result.data.entity.payload.context === null
+      result.data.entity.otherPerspectives === null
         ? []
         : await Promise.all(
-            result.data.entity.payload.context.perspectives.map(
-              async (perspective): Promise<PerspectiveData> => {
-                /** data on this perspective */
-                const remote = this.remotes.find(
-                  (r) => r.id === perspective.payload.remote
-                );
-                if (!remote)
-                  throw new Error(
-                    `remote not found for ${perspective.payload.remote}`
-                  );
+            result.data.entity.otherPerspectives.map(
+              async (entity): Promise<PerspectiveData> => {
+                /** data on this perspective */                
+                
+                const perspective = await this.client.query({
+                  query: gql`{
+                    entity(uref: "${entity.id}") {
+                      id
+                      head
+                      name
+                      ... on Perspective {
+                        payload {
+                          remote
+                          path
+                          creatorId 
+                          timestamp     
+                          context                    
+                        }
+                      }
+                    }
+                  }`
+                });                
+
                 this.canWrite = await EveesHelpers.canWrite(
                   this.client,
                   this.perspectiveId
-                );
+                );        
+                
+                console.error('hey', perspective);
+
+                const {
+                  data: {
+                    entity: {
+                      id,
+                      name,
+                      head,
+                      payload: {
+                        creatorId,                        
+                        remote,
+                        timestamp,
+                        context
+                      }
+                    }
+                  }
+                } = perspective;
+                
                 return {
-                  id: perspective.id,
-                  name: perspective.name,
-                  creatorId: perspective.payload.creatorId,
-                  timestamp: perspective.payload.timestamp,
-                  remote: perspective.payload.remote,
+                  id: id,
+                  name: name,
+                  creatorId: creatorId,
+                  timestamp: timestamp,
+                  remote: remote,
+                  context: context
                 };
               }
             )
@@ -118,9 +132,9 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
       (perspectiveData) => !this.hidePerspectives.includes(perspectiveData.id)
     );
 
-    this.loadingPerspectives = false;
+    this.loadingPerspectives = false;    
 
-    this.logger.info('getOtherPersepectives() - post', {
+    this.logger.info('getOtherPersepectives() - get', {
       persperspectivesData: this.perspectivesData,
     });
   }

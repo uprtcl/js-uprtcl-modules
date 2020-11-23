@@ -17,7 +17,7 @@ import {
   EveesConfig
 } from '../types';
 import { EveesBindings } from '../bindings';
-import { DELETE_PERSPECTIVE, CREATE_PROPOSAL, FORK_PERSPECTIVE } from '../graphql/queries';
+import { DELETE_PERSPECTIVE, CREATE_PROPOSAL, FORK_PERSPECTIVE, GET_OTHER_PERSPECTIVES } from '../graphql/queries';
 import { EveesHelpers } from '../graphql/evees.helpers';
 import { MergeStrategy } from '../merge/merge-strategy';
 import { Evees } from '../services/evees';
@@ -240,32 +240,17 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
     this.logger.info('checkPull()', this.pullWorkspace);
   }
 
-  async getContextPerspectives(perspectiveId?: string): Promise<string[]> {
+  async getOthersPerspectives(perspectiveId?: string): Promise<string[]> {
     perspectiveId = perspectiveId || this.uref;
     const result = await this.client.query({
-      query: gql`{
-          entity(uref: "${perspectiveId}") {
-            id
-            ... on Perspective {
-              payload {
-                remote
-                context {
-                  id
-                  perspectives {
-                    id
-                  } 
-                }
-              }
-            }
-          }
-        }`
-    });
+      query: GET_OTHER_PERSPECTIVES(perspectiveId)
+    });  
 
     /** data on other perspectives (proposals are injected on them) */
     const perspectives =
-      result.data.entity.payload.context === null
+      result.data.entity.otherPerspectives === null
         ? []
-        : result.data.entity.payload.context.perspectives;
+        : result.data.entity.otherPerspectives;
 
     // remove duplicates
     const map = new Map<string, null>();
