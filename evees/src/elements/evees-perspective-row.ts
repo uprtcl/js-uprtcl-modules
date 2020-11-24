@@ -70,7 +70,11 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
                           <b>Title</b>: ${this.title} | Created by
                         </div>
                       ` 
-                    : '' }
+                    : html `
+                        <div class="title"> 
+                          No title | 
+                        </div>
+                      ` }
                 <evees-author
                   show-name
                   color=${this.perspectiveColor(this.creatorId)}
