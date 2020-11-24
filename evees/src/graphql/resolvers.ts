@@ -21,6 +21,7 @@ import { EveesRemote } from '../services/evees.remote';
 import { EveesHelpers } from './evees.helpers';
 import { EveesWorkspace } from '../services/evees.workspace';
 import { GET_PERSPECTIVE_CONTEXTS } from './queries';
+import { fork } from 'child_process';
 
 const getOtherPerspectives = async (perspectiveId, container) => {  
   if (perspectiveId === undefined) return [];
@@ -304,11 +305,21 @@ export const eveesResolvers: IResolvers = {
       const perspective = await loadEntity<Signed<Perspective>>(client, newPerspectiveId);
       if (!perspective) throw new Error('perspective not found');
 
+      const otherPerspectives = (await getOtherPerspectives(newPerspectiveId, container)).map((persp) => {
+        return {
+          id: persp,
+          otherPerspectives: {
+            id: newPerspectiveId
+          }
+        }
+      });
+
       return {
         id: newPerspectiveId,
         name: name,
         head: headId,
-        payload: perspective.object.payload
+        payload: perspective.object.payload,
+        otherPerspectives: otherPerspectives
       };
     },
 
