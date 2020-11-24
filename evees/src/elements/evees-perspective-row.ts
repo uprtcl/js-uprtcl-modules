@@ -2,7 +2,6 @@ import { LitElement, property, html, css, query } from 'lit-element';
 
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 import { eveeColor } from './support';
-import { EveesHelpers } from '../graphql/evees.helpers';
 
 interface PerspectiveData {
     id: string;
@@ -36,6 +35,9 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
     @property({ type: String, attribute: 'remote-id' })
     remoteId!: string;
 
+    @property({ type: String, attribute: 'title' })
+    title!: string;
+
     perspectiveClicked(id: string) {
         this.dispatchEvent(
             new CustomEvent('perspective-selected', {
@@ -62,6 +64,13 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
               ?selected=${this.perspectiveId === this.otherPerspectiveId}
               @click=${() => this.perspectiveClicked(this.otherPerspectiveId)}
             >
+                ${ ((this.context !== this.parentContext) && this.title !== undefined) 
+                    ? html `
+                        <div class="title"> 
+                          <b>Title</b>: ${this.title} | Created by
+                        </div>
+                      ` 
+                    : '' }
                 <evees-author
                   show-name
                   color=${this.perspectiveColor(this.creatorId)}
@@ -79,6 +88,9 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
           }
           uprtcl-list-item evees-author {
             width: 100%;
+          }
+          .title {
+            padding: 6px 10px 0px 0px;
           }
         `;
       }

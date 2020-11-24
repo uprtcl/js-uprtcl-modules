@@ -1,6 +1,12 @@
 import { ApolloClient, gql } from 'apollo-boost';
 import { LitElement, property, html, css } from 'lit-element';
 
+import {  
+  CortexModule,
+  HasTitle,
+  PatternRecognizer
+} from '@uprtcl/cortex';
+
 import { ApolloClientModule } from '@uprtcl/graphql';
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 
@@ -16,6 +22,7 @@ interface PerspectiveData {
   creatorId: string;
   timestamp: number;
   context: string;
+  title?: string;
 }
 
 export class EveesPerspectivesList extends moduleConnect(LitElement) {
@@ -46,12 +53,14 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
 
   protected client!: ApolloClient<any>;
   protected remotes!: EveesRemote[];
+  protected recognizer!: PatternRecognizer;
 
   async firstUpdated() {
     if (!this.isConnected) return;
 
     this.client = this.request(ApolloClientModule.bindings.Client);
     this.remotes = this.requestAll(EveesBindings.EveesRemote) as EveesRemote[];
+    this.recognizer = this.request(CortexModule.bindings.Recognizer);
     this.load();
   }
 
@@ -113,13 +122,23 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                   }
                 } = perspective;
                 
+                const data = await EveesHelpers.getPerspectiveData(this.client, id);
+                
+                const hasTitle: HasTitle = this.recognizer
+                                              .recognizeBehaviours(data)
+                                              .find((b) => (b as HasTitle).title);
+
+                const title = (!data) ? undefined
+                                      : hasTitle.title(data);
+
                 return {
-                  id: id,
-                  name: name,
-                  creatorId: creatorId,
-                  timestamp: timestamp,
-                  remote: remote,
-                  context: context
+                  id,
+                  name,
+                  creatorId,
+                  timestamp,
+                  remote,
+                  context,
+                  title
                 };
               }
             )
@@ -175,6 +194,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                 <evees-perspective-row
                   perspective-id=${this.perspectiveId}
                   parent-context=${this.parentContext}
+                  title=${this.title}
                   hasMeta
                   perspective-data-id=${perspectiveData.id}
                   creator-id=${perspectiveData.creatorId}
