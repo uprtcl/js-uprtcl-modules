@@ -53,10 +53,8 @@ export class RecursiveContextMergeStrategy extends SimpleMergeStrategy {
         entity(uref: "${perspectiveId}") {
           id
           ... on Perspective {
-            payload {
-              context {
-                id
-              }
+            payload {              
+              context
             }
             head {
               id
@@ -72,7 +70,7 @@ export class RecursiveContextMergeStrategy extends SimpleMergeStrategy {
       }`
     });
 
-    const context = result.data.entity.payload.context.id;
+    const context = result.data.entity.payload.context;
 
     this.setPerspective(perspectiveId, context, to);
 

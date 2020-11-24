@@ -56,7 +56,8 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
   }
 
   async load() {
-    this.loadingPerspectives = true;    
+    this.loadingPerspectives = true;  
+
     const result = await this.client.query({
       query: GET_OTHER_PERSPECTIVES(this.perspectiveId)
     });        
@@ -74,8 +75,10 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                   query: gql`{
                     entity(uref: "${entity.id}") {
                       id
-                      head
                       name
+                      head {
+                        id                      
+                      }
                       ... on Perspective {
                         payload {
                           remote
@@ -92,7 +95,7 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                 this.canWrite = await EveesHelpers.canWrite(
                   this.client,
                   this.perspectiveId
-                );                                        
+                );                
 
                 const {
                   data: {
