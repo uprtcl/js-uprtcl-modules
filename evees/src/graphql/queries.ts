@@ -126,6 +126,12 @@ export const FORK_PERSPECTIVE: DocumentNode = gql`
         timestamp
         context
       }
+      otherPerspectives {
+        id
+        otherPerspectives {
+          id
+        }
+      }
     }
   }
 `;
