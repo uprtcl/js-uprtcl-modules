@@ -54,7 +54,7 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
         return eveeColor(creatorId);
     }
 
-    render() {        
+    render() {              
         return html`
             <uprtcl-list-item
               style=${`--selected-border-color: ${this.perspectiveColor(
@@ -71,8 +71,8 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
                         </div>
                       ` 
                     : html `
-                        <div class="title"> 
-                          No title | 
+                        <div class="title no-title"> 
+                          Created by
                         </div>
                       ` }
                 <evees-author
@@ -94,7 +94,10 @@ export class EveesPerspectiveRow extends moduleConnect(LitElement) {
             width: 100%;
           }
           .title {
-            padding: 6px 10px 0px 0px;
+            padding: 6px 10px 0px 0px;            
+          }
+          .no-title {
+            color: #868686;
           }
         `;
       }

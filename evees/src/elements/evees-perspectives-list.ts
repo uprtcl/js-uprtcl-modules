@@ -123,13 +123,11 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
                 } = perspective;
                 
                 const data = await EveesHelpers.getPerspectiveData(this.client, id);
-                
-                const hasTitle: HasTitle = this.recognizer
-                                              .recognizeBehaviours(data)
-                                              .find((b) => (b as HasTitle).title);
 
                 const title = (!data) ? undefined
-                                      : hasTitle.title(data);
+                                      : (this.recognizer
+                                        .recognizeBehaviours(data)
+                                        .find((b) => (b as HasTitle).title)).title(data);
 
                 return {
                   id,
@@ -193,13 +191,13 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
               html`
                 <evees-perspective-row
                   perspective-id=${this.perspectiveId}
-                  parent-context=${this.parentContext}
-                  title=${this.title}
+                  parent-context=${this.parentContext}                  
                   hasMeta
-                  perspective-data-id=${perspectiveData.id}
+                  other-perspective-id=${perspectiveData.id}
                   creator-id=${perspectiveData.creatorId}
                   remote-id=${perspectiveData.remote}
                   context=${perspectiveData.context}
+                  title=${perspectiveData.title}
                 ></evees-perspective-row>
               `
             )}
