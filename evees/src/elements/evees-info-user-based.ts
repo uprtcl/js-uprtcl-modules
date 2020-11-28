@@ -163,6 +163,10 @@ export class EveesInfoUserBased extends EveesInfoBase {
     const minesSorted = mines.sort(sortOnTimestamp).reverse();
     this.mineId = minesSorted.length > 0 ? minesSorted[0].id : undefined;
 
+    if(minesSorted.find(e => e.object.payload.context.includes('home'))) {
+      this.mineId = minesSorted[minesSorted.length - 1].id;
+    }
+
     /** inform the parent whose the official, a bit ugly... but */
     this.dispatchEvent(
       new CustomEvent('official-id', {
