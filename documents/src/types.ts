@@ -58,7 +58,7 @@ export interface CustomBlock {
   default: any;
   canConvertTo: Record<
     string,
-    (uref: string, client: ApolloClient<any>) => Promise<any>
+    (node: DocNode, client: ApolloClient<any>) => Promise<any>
   >;
 }
 

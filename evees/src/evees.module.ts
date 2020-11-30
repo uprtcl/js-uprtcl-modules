@@ -64,7 +64,7 @@ export class EveesModule extends MicroModule {
     this.config = this.config || {};
 
     this.config.defaultRemote = this.config.defaultRemote
-      ? this.config.defaultRemote[0]
+      ? this.config.defaultRemote
       : this.eveesProviders[0];
 
     this.config.officialRemote = this.config.officialRemote

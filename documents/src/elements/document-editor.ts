@@ -45,7 +45,7 @@ import { HasDocNodeLenses } from '../patterns/document-patterns';
 import { icons } from './prosemirror/icons';
 import { DocumentsBindings } from '../bindings';
 
-const LOGINFO = true;
+const LOGINFO = false;
 const SELECTED_BACKGROUND = 'rgb(200,200,200,0.2);';
 const PLACEHOLDER_TOKEN = '_PLACEHOLDER_';
 
@@ -726,8 +726,10 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       if (!leaf) throw new Error('doc not defined');
     }
 
+    const childIx = coord.shift();
+    if (childIx === undefined) throw new Error('coord was emoty');
     /** now we are at the parent */
-    leaf.childrenNodes[thisCoord] = node;
+    leaf.childrenNodes[childIx] = node;
   }
 
   createPlaceholder(draft: any, parent?: DocNode, ix?: number): DocNode {
@@ -1053,7 +1055,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
 
     const newObject = await this.customBlocks[node.draftType].canConvertTo[
       type
-    ](node.uref, this.client);
+    ](node, this.client);
 
     /** update all the node properties */
     node = this.draftToPlaceholder(newObject, node.parent, node.ix);
@@ -1583,12 +1585,6 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       .node-mark svg {
         height: 14px;
         width: 14px;
-      }
-
-      @media (max-width: 768px) {
-        .doc-topbar {
-          display: none;
-        }
       }
     `;
   }
