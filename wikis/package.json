@@ -1,6 +1,6 @@
 {
   "name": "@uprtcl/wikis",
-  "version": "0.1.0-beta.13",
+  "version": "0.1.0-beta.14",
   "description": "Cortex module implementing texts and folders",
   "homepage": "https://uprtcl.io",
   "scripts": {
@@ -12,10 +12,10 @@
     "test:watch": "karma start --auto-watch=true --single-run=false"
   },
   "dependencies": {
-    "@uprtcl/common-ui": "^0.1.0-beta.13",
+    "@uprtcl/common-ui": "^0.1.0-beta.14",
     "@uprtcl/cortex": "^0.1.0-beta.4",
-    "@uprtcl/documents": "^0.1.0-beta.13",
-    "@uprtcl/evees": "^0.1.0-beta.13",
+    "@uprtcl/documents": "^0.1.0-beta.14",
+    "@uprtcl/evees": "^0.1.0-beta.14",
     "@uprtcl/graphql": "^0.1.0-beta.4",
     "@uprtcl/holochain-provider": "^0.1.0-beta.7",
     "@uprtcl/http-provider": "^0.1.0-beta.7",
