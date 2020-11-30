@@ -26,6 +26,7 @@ export class EveesAuthor extends moduleConnect(LitElement) {
   protected remote!: EveesRemote;
 
   async firstUpdated() {
+    if (!this.isConnected) return;
     this.remotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.load();
   }
@@ -37,6 +38,11 @@ export class EveesAuthor extends moduleConnect(LitElement) {
   }
 
   async load() {
+    this.loading = true;
+
+    if (!this.remoteId) return;
+    if (!this.userId) return;
+
     const remote = this.remotes.find((r) => r.id === this.remoteId);
     if (!remote) {
       throw new Error(`remote ${this.remoteId} not found`);
