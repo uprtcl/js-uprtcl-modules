@@ -156,16 +156,13 @@ export class EveesInfoUserBased extends EveesInfoBase {
     const mines = perspectives.filter(
       (p) =>
         p.object.payload.remote === defaultRemote.id &&
-        p.object.payload.creatorId === defaultRemote.userId
+        p.object.payload.creatorId === defaultRemote.userId && 
+        p.object.payload.context === first.object.payload.context
     );
 
     /** the latest perspective is considered the "mine", other perspectives might exist and are listed under other */
     const minesSorted = mines.sort(sortOnTimestamp).reverse();
     this.mineId = minesSorted.length > 0 ? minesSorted[0].id : undefined;
-
-    if(minesSorted.find(e => e.object.payload.context.includes('home'))) {
-      this.mineId = minesSorted[minesSorted.length - 1].id;
-    }
 
     /** inform the parent whose the official, a bit ugly... but */
     this.dispatchEvent(
