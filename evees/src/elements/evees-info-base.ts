@@ -1,7 +1,5 @@
 import { LitElement, property, html, css, query, TemplateResult } from 'lit-element';
-
-import { ApolloClient, gql } from 'apollo-boost';
-
+import { ApolloClient, FetchPolicy } from 'apollo-boost';
 import { ApolloClientModule } from '@uprtcl/graphql';
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 import { CortexModule, PatternRecognizer, Entity, Signed } from '@uprtcl/cortex';
@@ -240,9 +238,10 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
     this.logger.info('checkPull()', this.pullWorkspace);
   }
 
-  async getOthersPerspectives(perspectiveId?: string): Promise<string[]> {
+  async getOtherPerspectives(perspectiveId?: string, fetchPolicy?: FetchPolicy): Promise<string[]> {
     perspectiveId = perspectiveId || this.uref;
     const result = await this.client.query({
+      fetchPolicy,
       query: GET_OTHER_PERSPECTIVES(perspectiveId)
     });  
 
@@ -467,6 +466,8 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
     });
 
     const newPerspectiveId = result.data.forkPerspective.id;
+
+    await this.getOtherPerspectives(this.uref, 'network-only');
 
     this.dispatchEvent(
       new CustomEvent('new-perspective-created', {

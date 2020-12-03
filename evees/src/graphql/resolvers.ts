@@ -23,7 +23,7 @@ import { EveesWorkspace } from '../services/evees.workspace';
 import { GET_PERSPECTIVE_CONTEXTS } from './queries';
 import { fork } from 'child_process';
 
-const getOtherPerspectives = async (perspectiveId, container) => {  
+const getOtherPerspectives = async (perspectiveId, container) => {
   if (perspectiveId === undefined) return [];
 
   const eveesRemotes: EveesRemote[] = container.getAll(EveesBindings.EveesRemote);
@@ -316,10 +316,10 @@ export const eveesResolvers: IResolvers = {
 
       return {
         id: newPerspectiveId,
-        name: name,
+        name,
         head: headId,
         payload: perspective.object.payload,
-        otherPerspectives: otherPerspectives
+        otherPerspectives
       };
     },
 

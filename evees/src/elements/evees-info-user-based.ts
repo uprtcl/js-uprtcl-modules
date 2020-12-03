@@ -124,7 +124,7 @@ export class EveesInfoUserBased extends EveesInfoBase {
 
     if (!first) throw new Error(`first perspective ${this.firstRef}`);
 
-    const perspectiveIds = await this.getOthersPerspectives(this.firstRef);
+    const perspectiveIds = await this.getOtherPerspectives(this.firstRef);
     const perspectives = ((await Promise.all(
       perspectiveIds.map((perspectiveId) =>
         loadEntity<Signed<Perspective>>(this.client, perspectiveId)
