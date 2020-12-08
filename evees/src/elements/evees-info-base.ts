@@ -484,7 +484,6 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
     this.logger.info('newPerspectiveClicked() - perspective created', {
       id: newPerspectiveId
     });
-    this.creatingNewPerspective = false;
   }
 
   checkoutPerspective(perspectiveId: string) {
