@@ -66,7 +66,7 @@ export class EveesInfoPage extends EveesInfoBase {
 
   async saveName() {
     if (!this.shadowRoot) return;
-    const client = this.client as ApolloClient<any>;
+    const client = this.client as UprtclClient<any>;
     const newName = this.draftTextField.value;
 
     this.showEditName = false;

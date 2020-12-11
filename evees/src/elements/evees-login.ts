@@ -4,7 +4,6 @@ import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 
 import { EveesRemote } from '../services/evees.remote';
 import { EveesBindings } from '../bindings';
-import { ApolloClient } from 'apollo-boost';
 
 export class EveesLoginWidget extends moduleConnect(LitElement) {
   logger = new Logger('EVEES-LOGIN');
@@ -16,14 +15,14 @@ export class EveesLoginWidget extends moduleConnect(LitElement) {
   logged!: boolean;
 
   remotes!: EveesRemote[];
-  client!: ApolloClient<any>;
+  client!: UprtclClient<any>;
 
   @internalProperty()
   private showAccountSelection: boolean = false;
 
   async firstUpdated() {
     this.remotes = this.requestAll(EveesBindings.EveesRemote);
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.load();
   }
 

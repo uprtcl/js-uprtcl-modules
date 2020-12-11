@@ -1,4 +1,3 @@
-import { ApolloClient, gql } from 'apollo-boost';
 import { inject, injectable } from 'inversify';
 
 import {
@@ -31,8 +30,8 @@ export class SimpleMergeStrategy implements MergeStrategy {
     @inject(EveesBindings.Evees) protected evees: Evees,
     @inject(CortexModule.bindings.Recognizer)
     protected recognizer: PatternRecognizer,
-    @inject(ApolloClientModule.bindings.Client)
-    protected client: ApolloClient<any>,
+    @inject(UprtclClientModule.bindings.Client)
+    protected client: UprtclClient<any>,
     @inject(DiscoveryModule.bindings.EntityCache)
     protected entityCache: EntityCache
   ) {}

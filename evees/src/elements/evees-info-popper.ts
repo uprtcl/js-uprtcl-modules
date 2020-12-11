@@ -45,10 +45,10 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
   @query('#info-popper')
   infoPopper!: UprtclPopper;
 
-  protected client!: ApolloClient<any>;
+  protected client!: UprtclClient<any>;
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     await this.load();
   }
 

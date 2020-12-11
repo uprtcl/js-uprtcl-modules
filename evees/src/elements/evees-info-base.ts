@@ -7,8 +7,6 @@ import {
   TemplateResult,
 } from 'lit-element';
 
-import { ApolloClient, gql } from 'apollo-boost';
-
 import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 import {
   CortexModule,
@@ -123,7 +121,7 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
   perspectiveData!: PerspectiveData;
   pullWorkspace: EveesWorkspace | undefined = undefined;
 
-  protected client!: ApolloClient<any>;
+  protected client!: UprtclClient<any>;
   protected config!: EveesConfig;
   protected merge!: MergeStrategy;
   protected evees!: Evees;
@@ -139,7 +137,7 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
   protected defaultRemote: EveesRemote | undefined = undefined;
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.config = this.request(EveesBindings.Config);
     this.merge = this.request(EveesBindings.MergeStrategy);
     this.evees = this.request(EveesBindings.Evees);

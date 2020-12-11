@@ -1,5 +1,3 @@
-import { ApolloClient, ApolloLink, gql } from 'apollo-boost';
-import Observable from 'zen-observable-ts';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { Entity, PatternRecognizer } from '@uprtcl/cortex';
 import { UpdateRequest, NewPerspectiveData } from '../types';
@@ -9,38 +7,17 @@ export class EveesWorkspace {
   private newPerspectives: NewPerspectiveData[] = [];
   private updates: UpdateRequest[] = [];
 
-  public workspace: ApolloClient<any>;
+  public workspace: UprtclClient<any>;
 
   constructor(
-    client: ApolloClient<any>,
+    client: UprtclClient<any>,
     protected recognizer?: PatternRecognizer
   ) {
     this.workspace = this.buildWorkspace(client);
   }
 
-  private buildWorkspace(client: ApolloClient<any>): ApolloClient<any> {
-    const link = new ApolloLink((operation, forward) => {
-      return new Observable((observer) => {
-        client
-          .query({
-            query: operation.query,
-            variables: operation.variables,
-            context: operation.getContext(),
-          })
-          .then((result) => {
-            observer.next(result);
-            observer.complete();
-          })
-          .catch((error) => {
-            observer.error(error);
-            observer.complete();
-          });
-
-        return () => {};
-      });
-    });
-
-    const workspace = new ApolloClient<any>({
+  private buildWorkspace(client: UprtclClient<any>): UprtclClient<any> {
+    const workspace = new UprtclClient<any>({
       cache: cloneDeep(client.cache),
       typeDefs: client.typeDefs,
       link: link,
@@ -102,7 +79,7 @@ export class EveesWorkspace {
     this.cacheUpdateHead(this.workspace, update);
   }
 
-  public cacheCreateEntity(client: ApolloClient<any>, entity: Entity<any>) {
+  public cacheCreateEntity(client: UprtclClient<any>, entity: Entity<any>) {
     if (!this.recognizer) throw new Error('recognized not provided');
 
     const type = this.recognizer.recognizeType(entity);
@@ -134,7 +111,7 @@ export class EveesWorkspace {
   }
 
   public cacheInitPerspective(
-    client: ApolloClient<any>,
+    client: UprtclClient<any>,
     newPerspective: NewPerspectiveData
   ) {
     const perspectiveId = newPerspective.perspective.id;
@@ -176,7 +153,7 @@ export class EveesWorkspace {
     });
   }
 
-  public cacheUpdateHead(client: ApolloClient<any>, update: UpdateRequest) {
+  public cacheUpdateHead(client: UprtclClient<any>, update: UpdateRequest) {
     const perspectiveId = update.perspectiveId;
     // TODO: keep track of old head?...
 
@@ -205,13 +182,13 @@ export class EveesWorkspace {
   }
 
   /** takes the Evees actions and replicates them in another client  */
-  public async execute(client: ApolloClient<any>) {
+  public async execute(client: UprtclClient<any>) {
     await this.executeCreate(client);
     await this.executeInit(client);
     return this.executeUpdate(client);
   }
 
-  public async executeCreate(client: ApolloClient<any>) {
+  public async executeCreate(client: UprtclClient<any>) {
     const create = this.entities.map(async (entity) => {
       const mutation = await client.mutate({
         mutation: CREATE_ENTITY,
@@ -236,9 +213,9 @@ export class EveesWorkspace {
 
   /* Takes the new perspectives and sets their head in the cache 
      before the perspective is actually created */
-  public precacheInit(client: ApolloClient<any>) {}
+  public precacheInit(client: UprtclClient<any>) {}
 
-  private async executeInit(client: ApolloClient<any>) {
+  private async executeInit(client: UprtclClient<any>) {
     const createPerspective = async (newPerspective: NewPerspectiveData) => {
       const result = await client.mutate({
         mutation: CREATE_PERSPECTIVE,
@@ -268,14 +245,14 @@ export class EveesWorkspace {
   }
 
   /** copies the new perspective data (head) in the workspace into the
-   *  cache of an apollo client */
-  public async precacheNewPerspectives(client: ApolloClient<any>) {
+   *  cache of an client */
+  public async precacheNewPerspectives(client: UprtclClient<any>) {
     this.newPerspectives.reverse().map((newPerspective) => {
       this.cacheInitPerspective(client, newPerspective);
     });
   }
 
-  public async executeUpdate(client: ApolloClient<any>) {
+  public async executeUpdate(client: UprtclClient<any>) {
     const update = this.getUpdates().map(async (update) => {
       return client.mutate({
         mutation: UPDATE_HEAD,

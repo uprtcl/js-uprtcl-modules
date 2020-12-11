@@ -1,8 +1,6 @@
-import { property, css, LitElement, internalProperty } from 'lit-element';
-import { ApolloClient } from 'apollo-boost';
+import { property, LitElement, internalProperty } from 'lit-element';
 
 import { Logger, moduleConnect } from '@uprtcl/micro-orchestrator';
-import { styles } from '@uprtcl/common-ui';
 import {
   Entity,
   CortexModule,
@@ -49,13 +47,13 @@ export class EveesBaseElement<T> extends moduleConnect(LitElement) {
 
   protected currentHeadId!: string | undefined;
   protected remote!: EveesRemote;
-  protected client!: ApolloClient<any>;
+  protected client!: UprtclClient<any>;
   protected remotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
   protected editableRemotesIds!: string[];
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.remotes = this.requestAll(EveesBindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
 

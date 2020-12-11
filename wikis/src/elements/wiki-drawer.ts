@@ -1,5 +1,4 @@
 import { property, html, css, LitElement, query } from 'lit-element';
-import { ApolloClient, gql } from 'apollo-boost';
 const styleMap = (style) => {
   return Object.entries(style).reduce((styleString, [propName, propValue]) => {
     propName = propName.replace(
@@ -58,7 +57,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   @query('#evees-info-row')
   eveesInfoLocal!: any;
 
-  protected client!: ApolloClient<any>;
+  protected client!: UprtclClient<any>;
   protected eveesRemotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
 
@@ -67,7 +66,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   }
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.eveesRemotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
 

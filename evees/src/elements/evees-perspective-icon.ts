@@ -19,10 +19,10 @@ export class EveesPerspectiveIcon extends moduleConnect(LitElement) {
   perspective!: Secured<Perspective>;
   remote!: EveesRemote;
   remotes!: EveesRemote[];
-  client!: ApolloClient<any>;
+  client!: UprtclClient<any>;
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.remotes = this.requestAll(EveesBindings.EveesRemote) as EveesRemote[];
     this.load();
   }

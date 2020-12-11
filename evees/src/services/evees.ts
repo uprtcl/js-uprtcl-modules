@@ -1,4 +1,3 @@
-import { ApolloClient, gql } from 'apollo-boost';
 import { multiInject, injectable, inject } from 'inversify';
 
 import {
@@ -29,8 +28,8 @@ export class Evees {
     protected recognizer: PatternRecognizer,
     @multiInject(EveesBindings.EveesRemote)
     protected eveesRemotes: EveesRemote[],
-    @inject(ApolloClientModule.bindings.Client)
-    protected client: ApolloClient<any>,
+    @inject(UprtclClientModule.bindings.Client)
+    protected client: UprtclClient<any>,
     @inject(EveesBindings.Config)
     protected config: EveesConfig
   ) {}

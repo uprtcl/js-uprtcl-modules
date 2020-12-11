@@ -60,7 +60,7 @@ describe('<cortex-entity>', () => {
 
     await orchestrator.loadModules([
       new i18nextBaseModule(),
-      new ApolloClientModule(),
+      new UprtclClientModule(),
       new CortexModule(),
       new DiscoveryModule(),
       new LensesModule(),

@@ -51,12 +51,12 @@ export class EveesProposalRow extends moduleConnect(LitElement) {
   executed: boolean = false;
   canExecute: boolean = false;
 
-  protected client!: ApolloClient<any>;
+  protected client!: UprtclClient<any>;
   protected recognizer!: PatternRecognizer;
   protected eveesRemotes!: EveesRemote[];
 
   async firstUpdated() {
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
     this.eveesRemotes = this.requestAll(EveesBindings.EveesRemote);
     const remote = (this.requestAll(
@@ -165,7 +165,7 @@ export class EveesProposalRow extends moduleConnect(LitElement) {
       workspace.newPerspective(newPerspective);
     }
 
-    /* new perspectives are added to the apollo cache to be able to read their head */
+    /* new perspectives are added to the cache to be able to read their head */
     await workspace.precacheNewPerspectives(this.client);
 
     this.showDiff = true;

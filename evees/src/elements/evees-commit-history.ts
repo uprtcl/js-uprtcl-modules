@@ -24,10 +24,10 @@ export class CommitHistory extends moduleConnect(LitElement) {
   async loadCommitHistory() {
     this.commitHistory = undefined;
 
-    const apolloClient: ApolloClient<any> = this.request(
-      ApolloClientModule.bindings.Client
+    const client: UprtclClient<any> = this.request(
+      UprtclClientModule.bindings.Client
     );
-    const result = await apolloClient.query({
+    const result = await client.query({
       query: gql`
       {
         entity(uref: "${this.commitId}") {

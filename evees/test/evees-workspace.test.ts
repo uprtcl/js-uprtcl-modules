@@ -58,7 +58,7 @@ describe('evees-workspace', () => {
 
     await orchestrator.loadModules([
       new i18nextBaseModule(),
-      new ApolloClientModule(),
+      new UprtclClientModule(),
       new CortexModule(),
       new DiscoveryModule(),
       new LensesModule(),
@@ -66,8 +66,8 @@ describe('evees-workspace', () => {
     ]);
   });
   it('evees-workspace works', async () => {
-    const client: ApolloClient<any> = orchestrator.container.get(
-      ApolloClientModule.bindings.Client
+    const client: UprtclClient<any> = orchestrator.container.get(
+      UprtclClientModule.bindings.Client
     );
     const recognizer: PatternRecognizer = orchestrator.container.get(
       CortexModule.bindings.Recognizer

@@ -13,12 +13,12 @@ export class ProposalsList extends moduleConnect(LitElement) {
 
   proposalsIds: string[] = [];
   remoteId!: string;
-  client!: ApolloClient<any>;
+  client!: UprtclClient<any>;
 
   async firstUpdated() {
     if (!this.isConnected) return;
 
-    this.client = this.request(ApolloClientModule.bindings.Client);
+    this.client = this.request(UprtclClientModule.bindings.Client);
     this.load();
   }
 
