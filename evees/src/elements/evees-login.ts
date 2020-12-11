@@ -5,8 +5,6 @@ import { moduleConnect, Logger } from '@uprtcl/micro-orchestrator';
 import { EveesRemote } from '../services/evees.remote';
 import { EveesBindings } from '../bindings';
 import { ApolloClient } from 'apollo-boost';
-import { ApolloClientModule } from '@uprtcl/graphql';
-import { Lens } from '@uprtcl/lenses';
 
 export class EveesLoginWidget extends moduleConnect(LitElement) {
   logger = new Logger('EVEES-LOGIN');

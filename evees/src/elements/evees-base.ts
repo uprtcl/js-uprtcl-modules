@@ -10,13 +10,11 @@ import {
   Signed,
   HasChildren,
 } from '@uprtcl/cortex';
-import { ApolloClientModule } from '@uprtcl/graphql';
 import { loadEntity } from '@uprtcl/multiplatform';
 import { EveesInfoConfig } from './evees-info-user-based';
 import { EveesRemote } from 'src/services/evees.remote';
 import { EveesConfig, Perspective } from 'src/types';
 import { EveesBindings } from 'src/bindings';
-import { EveesHelpers } from 'src/graphql/evees.helpers';
 
 const entityStub = (object: any): Entity<any> => {
   return {

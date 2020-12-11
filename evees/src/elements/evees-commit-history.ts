@@ -1,8 +1,5 @@
 import { LitElement, property, html, css } from 'lit-element';
-import { ApolloClient, gql } from 'apollo-boost';
-
 import { moduleConnect } from '@uprtcl/micro-orchestrator';
-import { ApolloClientModule } from '@uprtcl/graphql';
 
 interface CommitHistoryData {
   id: string;

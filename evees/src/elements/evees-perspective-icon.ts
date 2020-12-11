@@ -1,13 +1,13 @@
+import { LitElement, html, css, property, query } from 'lit-element';
+
 import { Signed } from '@uprtcl/cortex';
-import { ApolloClientModule } from '@uprtcl/graphql';
 import { moduleConnect } from '@uprtcl/micro-orchestrator';
 import { loadEntity } from '@uprtcl/multiplatform';
-import { ApolloClient } from 'apollo-boost';
-import { LitElement, html, css, property, query } from 'lit-element';
 import { EveesBindings } from 'src/bindings';
-import { Secured } from 'src/uprtcl-evees';
+
 import { EveesRemote } from '../services/evees.remote';
 import { Perspective } from '../types';
+import { Secured } from '../utils/cid-hash';
 
 export class EveesPerspectiveIcon extends moduleConnect(LitElement) {
   @property({ type: String, attribute: 'perspective-id' })

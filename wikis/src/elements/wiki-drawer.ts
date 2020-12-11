@@ -22,7 +22,6 @@ import {
   CONTENT_UPDATED_TAG,
   ContentUpdatedEvent,
 } from '@uprtcl/evees';
-import { ApolloClientModule } from '@uprtcl/graphql';
 import { WikiDrawerContent } from './wiki-drawer-content';
 import { loadEntity } from '@uprtcl/multiplatform';
 import {
