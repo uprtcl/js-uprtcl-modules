@@ -56,7 +56,7 @@ export interface CustomBlock {
   default: any;
   canConvertTo: Record<
     string,
-    (node: DocNode, client: UprtclClient<any>) => Promise<any>
+    (node: DocNode, client: EveesClient) => Promise<any>
   >;
 }
 

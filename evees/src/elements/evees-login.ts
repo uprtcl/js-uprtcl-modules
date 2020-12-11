@@ -15,14 +15,14 @@ export class EveesLoginWidget extends moduleConnect(LitElement) {
   logged!: boolean;
 
   remotes!: EveesRemote[];
-  client!: UprtclClient<any>;
+  client!: EveesClient;
 
   @internalProperty()
   private showAccountSelection: boolean = false;
 
   async firstUpdated() {
     this.remotes = this.requestAll(EveesBindings.EveesRemote);
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.load();
   }
 

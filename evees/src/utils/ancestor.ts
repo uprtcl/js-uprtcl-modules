@@ -1,4 +1,4 @@
-export const isAncestorOf = (client: UprtclClient<any>) => async (
+export const isAncestorOf = (client: EveesClient) => async (
   ancestorId: string,
   commitId: string
 ): Promise<boolean> => {

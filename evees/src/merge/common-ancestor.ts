@@ -10,7 +10,7 @@ export class FindMostRecentCommonAncestor {
   allCommits: { [key: string]: Secured<Commit> } = {};
   paths: Path[];
 
-  constructor(protected client: UprtclClient<any>, commitsIds: string[]) {
+  constructor(protected client: EveesClient, commitsIds: string[]) {
     this.paths = commitsIds.map((commitId) => ({
       visited: {},
       heads: [commitId],
@@ -90,7 +90,7 @@ export class FindMostRecentCommonAncestor {
 }
 
 export default function findMostRecentCommonAncestor(
-  client: UprtclClient<any>
+  client: EveesClient
 ): (commitsIds: string[]) => Promise<string | undefined> {
   return (commitsIds: string[]) =>
     new FindMostRecentCommonAncestor(client, commitsIds).compute();

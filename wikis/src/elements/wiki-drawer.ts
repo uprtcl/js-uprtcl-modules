@@ -57,7 +57,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   @query('#evees-info-row')
   eveesInfoLocal!: any;
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected eveesRemotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
 
@@ -66,7 +66,7 @@ export class WikiDrawer extends moduleConnect(LitElement) {
   }
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.eveesRemotes = this.requestAll(EveesModule.bindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
 

@@ -45,10 +45,10 @@ export class EveesInfoPopper extends moduleConnect(LitElement) {
   @query('#info-popper')
   infoPopper!: UprtclPopper;
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     await this.load();
   }
 

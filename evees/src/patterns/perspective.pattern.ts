@@ -22,8 +22,8 @@ export class PerspectivePattern extends Pattern<Entity<Signed<Perspective>>> {
 @injectable()
 export class PerspectiveLinks implements HasLinks, HasRedirect {
   constructor(
-    @inject(UprtclClientModule.bindings.Client)
-    protected client: UprtclClient<any>
+    @inject(EveesClientModule.bindings.Client)
+    protected client: EveesClient
   ) {}
 
   links = async (perspective: Entity<Signed<Perspective>>) => {

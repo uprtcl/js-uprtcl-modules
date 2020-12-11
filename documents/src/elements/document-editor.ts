@@ -91,7 +91,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
   } = {};
 
   doc: DocNode | undefined = undefined;
-  client!: UprtclClient<any>;
+  client!: EveesClient;
 
   protected remotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
@@ -114,7 +114,7 @@ export class DocumentEditor extends moduleConnect(LitElement) {
       : [];
 
     if (!this.client) {
-      this.client = this.request(UprtclClientModule.bindings.Client);
+      this.client = this.request(EveesClientModule.bindings.Client);
     }
 
     this.uref = this.firstRef;

@@ -28,8 +28,8 @@ export class Evees {
     protected recognizer: PatternRecognizer,
     @multiInject(EveesBindings.EveesRemote)
     protected eveesRemotes: EveesRemote[],
-    @inject(UprtclClientModule.bindings.Client)
-    protected client: UprtclClient<any>,
+    @inject(EveesClientModule.bindings.Client)
+    protected client: EveesClient,
     @inject(EveesBindings.Config)
     protected config: EveesConfig
   ) {}

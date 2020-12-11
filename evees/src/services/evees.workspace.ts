@@ -2,22 +2,19 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import { Entity, PatternRecognizer } from '@uprtcl/cortex';
 import { UpdateRequest, NewPerspectiveData } from '../types';
 
-export class EveesWorkspace {
+export class EveesClient {
   private entities: Entity<any>[] = [];
   private newPerspectives: NewPerspectiveData[] = [];
   private updates: UpdateRequest[] = [];
 
-  public workspace: UprtclClient<any>;
+  public workspace: EveesClient;
 
-  constructor(
-    client: UprtclClient<any>,
-    protected recognizer?: PatternRecognizer
-  ) {
+  constructor(client: EveesClient, protected recognizer?: PatternRecognizer) {
     this.workspace = this.buildWorkspace(client);
   }
 
-  private buildWorkspace(client: UprtclClient<any>): UprtclClient<any> {
-    const workspace = new UprtclClient<any>({
+  private buildWorkspace(client: EveesClient): EveesClient {
+    const workspace = new EveesClient({
       cache: cloneDeep(client.cache),
       typeDefs: client.typeDefs,
       link: link,
@@ -79,7 +76,7 @@ export class EveesWorkspace {
     this.cacheUpdateHead(this.workspace, update);
   }
 
-  public cacheCreateEntity(client: UprtclClient<any>, entity: Entity<any>) {
+  public cacheCreateEntity(client: EveesClient, entity: Entity<any>) {
     if (!this.recognizer) throw new Error('recognized not provided');
 
     const type = this.recognizer.recognizeType(entity);
@@ -111,7 +108,7 @@ export class EveesWorkspace {
   }
 
   public cacheInitPerspective(
-    client: UprtclClient<any>,
+    client: EveesClient,
     newPerspective: NewPerspectiveData
   ) {
     const perspectiveId = newPerspective.perspective.id;
@@ -153,7 +150,7 @@ export class EveesWorkspace {
     });
   }
 
-  public cacheUpdateHead(client: UprtclClient<any>, update: UpdateRequest) {
+  public cacheUpdateHead(client: EveesClient, update: UpdateRequest) {
     const perspectiveId = update.perspectiveId;
     // TODO: keep track of old head?...
 
@@ -182,13 +179,13 @@ export class EveesWorkspace {
   }
 
   /** takes the Evees actions and replicates them in another client  */
-  public async execute(client: UprtclClient<any>) {
+  public async execute(client: EveesClient) {
     await this.executeCreate(client);
     await this.executeInit(client);
     return this.executeUpdate(client);
   }
 
-  public async executeCreate(client: UprtclClient<any>) {
+  public async executeCreate(client: EveesClient) {
     const create = this.entities.map(async (entity) => {
       const mutation = await client.mutate({
         mutation: CREATE_ENTITY,
@@ -213,9 +210,9 @@ export class EveesWorkspace {
 
   /* Takes the new perspectives and sets their head in the cache 
      before the perspective is actually created */
-  public precacheInit(client: UprtclClient<any>) {}
+  public precacheInit(client: EveesClient) {}
 
-  private async executeInit(client: UprtclClient<any>) {
+  private async executeInit(client: EveesClient) {
     const createPerspective = async (newPerspective: NewPerspectiveData) => {
       const result = await client.mutate({
         mutation: CREATE_PERSPECTIVE,
@@ -246,13 +243,13 @@ export class EveesWorkspace {
 
   /** copies the new perspective data (head) in the workspace into the
    *  cache of an client */
-  public async precacheNewPerspectives(client: UprtclClient<any>) {
+  public async precacheNewPerspectives(client: EveesClient) {
     this.newPerspectives.reverse().map((newPerspective) => {
       this.cacheInitPerspective(client, newPerspective);
     });
   }
 
-  public async executeUpdate(client: UprtclClient<any>) {
+  public async executeUpdate(client: EveesClient) {
     const update = this.getUpdates().map(async (update) => {
       return client.mutate({
         mutation: UPDATE_HEAD,

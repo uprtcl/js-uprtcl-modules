@@ -47,13 +47,13 @@ export class EveesBaseElement<T> extends moduleConnect(LitElement) {
 
   protected currentHeadId!: string | undefined;
   protected remote!: EveesRemote;
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected remotes!: EveesRemote[];
   protected recognizer!: PatternRecognizer;
   protected editableRemotesIds!: string[];
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.remotes = this.requestAll(EveesBindings.EveesRemote);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
 

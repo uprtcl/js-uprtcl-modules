@@ -13,12 +13,12 @@ export class ProposalsList extends moduleConnect(LitElement) {
 
   proposalsIds: string[] = [];
   remoteId!: string;
-  client!: UprtclClient<any>;
+  client!: EveesClient;
 
   async firstUpdated() {
     if (!this.isConnected) return;
 
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.load();
   }
 

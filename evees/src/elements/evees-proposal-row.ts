@@ -51,12 +51,12 @@ export class EveesProposalRow extends moduleConnect(LitElement) {
   executed: boolean = false;
   canExecute: boolean = false;
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected recognizer!: PatternRecognizer;
   protected eveesRemotes!: EveesRemote[];
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.recognizer = this.request(CortexModule.bindings.Recognizer);
     this.eveesRemotes = this.requestAll(EveesBindings.EveesRemote);
     const remote = (this.requestAll(

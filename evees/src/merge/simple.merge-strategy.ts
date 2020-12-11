@@ -30,8 +30,8 @@ export class SimpleMergeStrategy implements MergeStrategy {
     @inject(EveesBindings.Evees) protected evees: Evees,
     @inject(CortexModule.bindings.Recognizer)
     protected recognizer: PatternRecognizer,
-    @inject(UprtclClientModule.bindings.Client)
-    protected client: UprtclClient<any>,
+    @inject(EveesClientModule.bindings.Client)
+    protected client: EveesClient,
     @inject(DiscoveryModule.bindings.EntityCache)
     protected entityCache: EntityCache
   ) {}

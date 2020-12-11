@@ -121,7 +121,7 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
   perspectiveData!: PerspectiveData;
   pullWorkspace: EveesWorkspace | undefined = undefined;
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected config!: EveesConfig;
   protected merge!: MergeStrategy;
   protected evees!: Evees;
@@ -137,7 +137,7 @@ export class EveesInfoBase extends moduleConnect(LitElement) {
   protected defaultRemote: EveesRemote | undefined = undefined;
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.config = this.request(EveesBindings.Config);
     this.merge = this.request(EveesBindings.MergeStrategy);
     this.evees = this.request(EveesBindings.Evees);

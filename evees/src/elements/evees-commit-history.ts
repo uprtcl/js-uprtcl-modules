@@ -24,9 +24,7 @@ export class CommitHistory extends moduleConnect(LitElement) {
   async loadCommitHistory() {
     this.commitHistory = undefined;
 
-    const client: UprtclClient<any> = this.request(
-      UprtclClientModule.bindings.Client
-    );
+    const client: EveesClient = this.request(EveesClientModule.bindings.Client);
     const result = await client.query({
       query: gql`
       {

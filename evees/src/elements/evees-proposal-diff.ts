@@ -25,11 +25,11 @@ export class EveesProposalDiff extends moduleConnect(LitElement) {
   @query('#evees-update-diff')
   eveesDiffEl!: EveesDiff;
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected workspace!: EveesWorkspace;
 
   async firstUpdated() {
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.loadProposal();
   }
 

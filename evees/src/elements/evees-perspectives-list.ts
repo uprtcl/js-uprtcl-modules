@@ -37,13 +37,13 @@ export class EveesPerspectivesList extends moduleConnect(LitElement) {
 
   perspectivesData: PerspectiveData[] = [];
 
-  protected client!: UprtclClient<any>;
+  protected client!: EveesClient;
   protected remotes!: EveesRemote[];
 
   async firstUpdated() {
     if (!this.isConnected) return;
 
-    this.client = this.request(UprtclClientModule.bindings.Client);
+    this.client = this.request(EveesClientModule.bindings.Client);
     this.remotes = this.requestAll(EveesBindings.EveesRemote) as EveesRemote[];
     this.load();
   }
