@@ -146,6 +146,10 @@ export class EveesBaseElement<T> extends moduleConnect(LitElement) {
     );
     await EveesHelpers.updateHead(this.client, this.uref, headId);
 
+    if ((this.remote as any).flush) {
+      await (this.remote as any).flush();
+    }
+
     this.logger.info('updateContent()', newData);
 
     await this.load();

@@ -420,6 +420,14 @@ export class DocumentEditor extends moduleConnect(LitElement) {
     await this.preparePersistRec(this.doc, this.doc.remote, message);
     await this.persistRec(this.doc);
 
+    const remote = this.remotes.find(
+      (r) => r.id == (this.doc as DocNode).remote
+    );
+    if (!remote) throw new Error('remote undefined');
+    if ((remote as any).flush) {
+      await (remote as any).flush();
+    }
+
     /** reload doc from backend */
     await this.loadDoc();
     this.requestUpdate();
